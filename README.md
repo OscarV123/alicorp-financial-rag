@@ -1,0 +1,1 @@
+*“This project uses publicly available financial reports from Alicorp S.A.A. The documents are included for educational and demonstration purposes only.”*

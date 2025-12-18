@@ -1,0 +1,18 @@
+# Project
+vector_store/
+data/raw/
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+.env.*
+.venv/
+env/
+venv/
+
+# Configuration files
+.DS_Store
+Thumbs.db
