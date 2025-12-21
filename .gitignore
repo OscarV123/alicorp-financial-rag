@@ -1,6 +1,7 @@
 # Project
 vector_store/
-data/raw/
+data/raw/*/*.pdf
+
 
 # Python
 __pycache__/
