@@ -67,8 +67,10 @@ def extract_metadata(pdf_path: Path) -> dict:
             period = mm
             break
     
-    if year and period:
+    if period is not None and year:
         period = f"{year}-{period}"
+    else:
+        period = "no_definido"
 
     source = "Alicorp"
     
