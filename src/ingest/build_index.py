@@ -17,6 +17,7 @@ from typing import List, Dict, Any, Iterator, Set
 import chromadb
 from chromadb.config import Settings
 from openai import OpenAI
+from config import CHUNKS_FILE, CHROMA_PATH, BATCH_SIZE, EMBED_MODEL, API_KEY
 
 def iter_chunks_from_file(chunks_file_path: Path) -> Iterator[Dict[str, Any]]:
     if not chunks_file_path.exists():
@@ -51,15 +52,14 @@ def batch_iter(chunks_generator: Iterator[Dict[str, Any]], batch_size: int) -> I
     if batch:
         yield batch
 
-def get_clients(chroma_path: Path) -> tuple[OpenAI, chromadb.api.Collection]:
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
+def get_clients() -> tuple[OpenAI, chromadb.api.Collection]:
+    if not API_KEY:
         raise ValueError("La variable de entorno OPENAI_API_KEY no fue encontrada.")
     
-    oai = OpenAI(api_key=api_key)
+    oai = OpenAI(api_key=API_KEY)
     
     chroma = chromadb.PersistentClient(
-        path=str(chroma_path),
+        path=str(CHROMA_PATH),
         settings=Settings(anonymized_telemetry=False)
     )
     
@@ -91,11 +91,11 @@ def filter_existing_chunk_ids(collection: chromadb.api.Collection, chunk_ids: Li
     
     return existing_ids
 
-def embed_texts(oai: OpenAI, texts: List[str], model: str) -> List[List[float]]:
-    resp = oai.embeddings.create(model=model, input=texts)
+def embed_texts(oai: OpenAI, texts: List[str]) -> List[List[float]]:
+    resp = oai.embeddings.create(model=EMBED_MODEL, input=texts)
     return [d.embedding for d in resp.data]
 
-def index_batch(collection: chromadb.api.Collection, oai: OpenAI, batch: List[Dict[str, Any]], model: str) -> int:
+def index_batch(collection: chromadb.api.Collection, oai: OpenAI, batch: List[Dict[str, Any]]) -> int:
     ids = [c["chunk_id"] for c in batch]
     existing = filter_existing_chunk_ids(collection, ids)
     new = [c for c in batch if c["chunk_id"] not in existing]
@@ -113,7 +113,7 @@ def index_batch(collection: chromadb.api.Collection, oai: OpenAI, batch: List[Di
         m.pop("chunk_text", None)
         metadatas.append(m)
     
-    vectors = embed_texts(oai, documents, model)
+    vectors = embed_texts(oai, documents)
 
     collection.add(
         ids=new_ids,
@@ -126,13 +126,7 @@ def index_batch(collection: chromadb.api.Collection, oai: OpenAI, batch: List[Di
 
 
 
-CHUNKS_FILE = Path("data/processed/chunks.jsonl")
-CHROMA_PATH = Path("vector_store")
-
-BATCH_SIZE = 128
-EMBED_MODEL = "text-embedding-3-small"
-
-oai, collection = get_clients(CHROMA_PATH)
+oai, collection = get_clients()
 
 total_read = 0
 total_indexed = 0
