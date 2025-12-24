@@ -31,7 +31,7 @@ REGLAS ESTRICTAS:
 10) Si presentas múltiples hechos, cada uno debe tener su propia cita inmediata.
 """
 
-USER_TEMPLATE = USER_TEMPLATE = """\
+USER_TEMPLATE = """\
 PREGUNTA: {question}
 EVIDENCIA (fragmentos): {context}
 INSTRUCCIONES:
@@ -47,7 +47,7 @@ INSTRUCCIONES:
 - Responde en español, con tono profesional y claro.
 """
 
-def format_citation(meta: Dict[str, Any]):
+def format_citation(meta: Dict[str, Any]) -> str:
     doc_id = meta.get("doc_id", "N/A")
     page = meta.get("page_number", "N/A")
 
