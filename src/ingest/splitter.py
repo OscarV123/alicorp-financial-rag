@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 import cleaner
 import loader
-from config import PAGES_FILE, CHUNKS_FILE, PDFS_PATH
+from src.config import PAGES_FILE, CHUNKS_FILE, PDFS_PATH
 
 def split_page_to_chunks(page_record: dict, chunk_size: int = 1200, overlap: int = 200) -> Iterator[dict]:
     text = page_record["page_text"]
@@ -72,5 +72,5 @@ def iter_pages_cleaned():
             page["page_text"] = clean_text
             yield page
 
-write_pages_to_jsonl(iter_pages_cleaned(), PAGES_FILE)
-write_chunks_to_jsonl(iter_pages_cleaned(), CHUNKS_FILE)
+# write_pages_to_jsonl(iter_pages_cleaned(), PAGES_FILE)
+# write_chunks_to_jsonl(iter_pages_cleaned(), CHUNKS_FILE)

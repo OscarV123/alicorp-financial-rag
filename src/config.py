@@ -22,3 +22,4 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 BATCH_SIZE = 128
 EMBED_MODEL = "text-embedding-3-small"
 TOP_K = 5
+LLM_MODEL = "gpt-4o-mini"

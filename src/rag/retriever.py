@@ -15,7 +15,7 @@ from typing import Dict
 from src.ingest.build_index import get_clients, embed_texts
 from openai import OpenAI
 from typing import List, Any, Optional
-from config import TOP_K
+from src.config import TOP_K
 
 @dataclass
 class Evidence:
