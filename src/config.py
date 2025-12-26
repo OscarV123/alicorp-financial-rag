@@ -15,7 +15,7 @@ from pathlib import Path
 import os
 
 PDFS_PATH = Path("data/raw/")
-PAGES_FILE = Path("data/processed/chunks.jsonl")
+PAGES_FILE = Path("data/processed/pages.jsonl")
 CHUNKS_FILE = Path("data/processed/chunks.jsonl")
 CHROMA_PATH = Path("vector_store")
 API_KEY = os.getenv("OPENAI_API_KEY")
