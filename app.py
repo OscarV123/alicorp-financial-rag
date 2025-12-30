@@ -2,8 +2,14 @@ from src.ingest.splitter import write_chunks_to_jsonl, write_pages_to_jsonl
 from src.config import PAGES_FILE, CHUNKS_FILE, BATCH_SIZE, CHROMA_PATH, EMBED_MODEL
 from src.ingest.splitter import iter_pages_cleaned
 from src.ingest.build_index import get_clients, iter_chunks_from_file, batch_iter, index_batch
+from src.rag.qa import answer_question
+from typing import Tuple
 
+#=================================================================
+#write_pages_to_jsonl(iter_pages_cleaned(), PAGES_FILE)
+#write_chunks_to_jsonl(iter_pages_cleaned(), CHUNKS_FILE)
 
+#=================================================================
 #oai, collection = get_clients()
 #
 #total_read = 0
@@ -27,14 +33,6 @@ from src.ingest.build_index import get_clients, iter_chunks_from_file, batch_ite
 #print(f"Vector store: {CHROMA_PATH} | Colección: rag_finanzas")
 
 #=================================================================
-
-#write_pages_to_jsonl(iter_pages_cleaned(), PAGES_FILE)
-#write_chunks_to_jsonl(iter_pages_cleaned(), CHUNKS_FILE)
-
-#=================================================================
-
-from src.rag.qa import answer_question
-
 while True:
     q = input("Pregunta: ").strip()
     if not q:
@@ -45,7 +43,8 @@ while True:
     res = answer_question(
         question=q,
         where=None,       
-        temperature=0.1
+        temperature=0.1,
+        mode="strict"
     )
 
     print("\n--- RESPUESTA ---")

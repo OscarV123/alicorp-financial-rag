@@ -21,5 +21,5 @@ CHROMA_PATH = Path("vector_store")
 API_KEY = os.getenv("OPENAI_API_KEY")
 BATCH_SIZE = 128
 EMBED_MODEL = "text-embedding-3-small"
-TOP_K = 5
+TOP_K = 10
 LLM_MODEL = "gpt-4o-mini"

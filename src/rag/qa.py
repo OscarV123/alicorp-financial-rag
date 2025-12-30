@@ -14,7 +14,7 @@
 # =====================================================|
 from src.rag.retriever import retrieve, Evidence
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Tuple
 from src.rag.prompt import build_context, USER_TEMPLATE, SYSTEM_RULES
 from src.config import TOP_K, API_KEY, LLM_MODEL
 from openai import OpenAI
@@ -24,10 +24,15 @@ class QAResult:
     answer: str
     evidences: List[Evidence]
   
-def build_messages(question: str, evidences: List[Evidence]) -> List[Dict[str, str]]:
+def build_messages(question: str, evidences: List[Evidence], mode: str="Stric") -> List[Dict[str, str]]:
     context = build_context(evidences)
     
+    mode = (mode or "strict").strip().lower()
+    if mode not in ("strict", "explanatory"):
+        mode = "strict"
+
     user_content = USER_TEMPLATE.format(
+        mode=mode,
         question=question.strip(),
         context=context      
     )
@@ -37,19 +42,31 @@ def build_messages(question: str, evidences: List[Evidence]) -> List[Dict[str, s
         {"role": "user", "content": user_content}
     ]
     
-def answer_question(question: str, top_k: int=TOP_K, where: Optional[Dict[str, Any]]=None, temperature: float=0.1) -> QAResult:
+def answer_question(question: str,
+                    top_k: int=TOP_K,
+                    where: Optional[Dict[str, Any]]=None,
+                    temperature: float=0.1,
+                    mode: str="strict") -> QAResult:
     if not API_KEY:
         raise ValueError("API_KEY no está configurada. Por favor, configure la clave de API para el LLM.")
     
     evidences = retrieve(question, top_k=top_k, where=where)
-    
+              
+    if isinstance(evidences, Tuple):
+        evidences, _ = evidences
+        print("\n=== DEBUG detect_signals ===")
+        print("key:", _.key)
+        print("score:", _.score)
+        print("where:", _.where)
+        print("debug:", _.debug)
+              
     if not evidences:
         return QAResult(
             answer="Lo siento, no pude encontrar información relevante para responder a su pregunta.",
             evidences=[]
         )
     
-    messages = build_messages(question, evidences)
+    messages = build_messages(question, evidences, mode)
     
     client = OpenAI(api_key=API_KEY)
     response = client.chat.completions.create(
