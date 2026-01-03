@@ -12,12 +12,12 @@
 # ====================================================================================|
 from dataclasses import dataclass
 from typing import Dict
-from src.ingest.build_index import get_clients, embed_texts
+import src.ingest.build_index as build_index
 from openai import OpenAI
 from typing import List, Any, Optional
-from src.config import TOP_K
+import src.config as config
 from typing import Dict, Any, Tuple
-from src.rag.retriever_utils import detect_signals, SignalMatch
+import src.rag.retriever_utils as retriever_utils
 
 @dataclass
 class Evidence:
@@ -27,7 +27,7 @@ class Evidence:
     distance: float
 
 def embed_query(oai: OpenAI, question: str) -> List[float]:
-    return embed_texts(oai, [question])[0]
+    return build_index.embed_texts(oai, [question])[0]
 
 def normalize_where(where: Dict[str, Any]) -> Dict[str, Any]:
     if not where:
@@ -79,14 +79,14 @@ def get_evidence(result) -> List[Evidence]:
     return evidences
 
 def retrieve(question: str,
-             top_k: int=TOP_K,
+             top_k: int=config.TOP_K,
              where: Optional[Dict[str, Any]]=None,
-             return_debug: bool=True) -> List[Evidence] | Tuple[List[Evidence], SignalMatch]:
+             return_debug: bool=True) -> List[Evidence] | Tuple[List[Evidence], retriever_utils.SignalMatch]:
     
-    oai, collection = get_clients()
+    oai, collection = build_index.get_clients()
     query_vector = embed_query(oai, question)
 
-    match_r = detect_signals(question)
+    match_r = retriever_utils.detect_signals(question)
     effective_where = where if where is not None else match_r.where
 
     result = query_collection(collection, query_vector, top_k, effective_where)

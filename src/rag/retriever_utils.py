@@ -1,3 +1,17 @@
+# =========================================================================================l
+# Selector de señales y filtros semánticos (question -> where metadata).                   | 
+#                                                                                          | 
+# Responsabilidad:                                                                         | 
+# - Analizar la pregunta del usuario en lenguaje natural.                                  | 
+# - Detectar señales explícitas e implícitas (tipo de documento, año, periodo, intención). |
+# - Traducir esas señales en filtros de metadata (where) para el retriever.                | 
+# - Priorizar tipos documentales cuando hay múltiples interpretaciones posibles.           | 
+#                                                                                          |
+# No hace:                                                                                 |
+# - No recupera chunks.                                                                    | 
+# - No puntúa embeddings ni calcula similitud.                                             | 
+# - No genera respuestas ni interpreta resultados.                                         |
+# =========================================================================================|
 import re
 from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass
@@ -199,7 +213,6 @@ RELATIVE_YEAR_RULES = [
     {"type": "regex", "kind": "past", "pattern": r"\b(\d{1,2})\s+a(?:ñ|n)os?\s+atr[aá]s\b"},
     {"type": "regex", "kind": "future", "pattern": r"\ben\s+(\d{1,2})\s+a(?:ñ|n)os?\b"},
 ]
-
 
 @dataclass
 class SignalMatch:
