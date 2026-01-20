@@ -41,7 +41,7 @@ while True:
         question=q,
         where=None,       
         temperature=0.1,
-        mode="strict"
+        mode="explanatory"
     )
 
     print("\n--- RESPUESTA ---")
