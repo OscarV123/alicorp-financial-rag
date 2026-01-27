@@ -29,8 +29,8 @@ class Evidence:
 def embed_query(oai: OpenAI, question: str) -> List[float]:
     return build_index.embed_texts(oai, [question])[0]
 
-def normalize_where(where: Dict[str, Any]) -> Dict[str, Any]:
-    if not where:
+def normalize_where(where: Dict[str, Any], explicit_where: Optional[List[str]]=None) -> Dict[str, Any]:
+    if not where and not explicit_where:
         return {}
     
     if any(k.startswith("$") for k in where.keys()):
@@ -46,7 +46,8 @@ def normalize_where(where: Dict[str, Any]) -> Dict[str, Any]:
 def query_collection(collection,
                      query_vector: List[float],
                      top_k: int,
-                     where: Optional[Dict[str, Any]] = None):
+                     where: Optional[Dict[str, Any]] = None,
+                     explicit_where: Optional[List[str]]=None):
     
     kwargs = {
         "query_embeddings": [query_vector],
@@ -55,7 +56,7 @@ def query_collection(collection,
     }
     
     if where:
-        kwargs["where"] = normalize_where(where)
+        kwargs["where"] = normalize_where(where=where, explicit_where=explicit_where)
 
     return collection.query(**kwargs)    
 
@@ -80,25 +81,25 @@ def get_evidence(result) -> List[Evidence]:
 
 def retrieve(question: str,
              top_k: int=config.TOP_K,
-             where: Optional[Dict[str, Any]]=None,
-             return_debug: bool=True) -> List[Evidence] | Tuple[List[Evidence], retriever_utils.SignalMatch]:
-    
+             explicit_where: Optional[Dict[str, Any]]=None,
+             return_debug: bool=True):
+
     oai, collection = build_index.get_clients()
     query_vector = embed_query(oai, question)
 
     match_r = retriever_utils.detect_signals(question)
-    effective_where = where if where is not None else match_r.where
+    match_r = retriever_utils.merge_where(match_r, explicit_where)  # ← reasignar
+    effective_where = match_r.where                                # ← dict final
 
     result = query_collection(collection, query_vector, top_k, effective_where)
     evidences = get_evidence(result)
 
-    if not evidences and effective_where:
-        if "period" in effective_where:
-            relaxed = dict(effective_where)
-            relaxed.pop("period", None)
-            result = query_collection(collection, query_vector, top_k, relaxed)
-            evidences = get_evidence (result)
-    
+    if not evidences and effective_where and "period" in effective_where:
+        relaxed = dict(effective_where)
+        relaxed.pop("period", None)
+        result = query_collection(collection, query_vector, top_k, relaxed)
+        evidences = get_evidence(result)
+
     if not evidences and effective_where and "year" in effective_where:
         relaxed = dict(effective_where)
         relaxed.pop("year", None)
@@ -111,5 +112,5 @@ def retrieve(question: str,
 
     if return_debug:
         return evidences, match_r
-    
+
     return evidences

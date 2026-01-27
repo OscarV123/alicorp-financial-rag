@@ -52,13 +52,13 @@ def build_messages(question: str, evidences: List[retriever.Evidence], mode: str
     
 def answer_question(question: str,
                     top_k: int=config.TOP_K,
-                    where: Optional[Dict[str, Any]]=None,
+                    explicit_where: Optional[Dict[str, Any]]=None,
                     temperature: float=0.1,
                     mode: str="strict") -> QAResult:
     if not config.API_KEY:
         raise ValueError("API_KEY no está configurada. Por favor, configure la clave de API para el LLM.")
     
-    evidences = retriever.retrieve(question, top_k=top_k, where=where, return_debug=False)
+    evidences = retriever.retrieve(question, top_k=top_k, explicit_where=explicit_where, return_debug=False)
               
     if isinstance(evidences, Tuple):
         evidences, _ = evidences

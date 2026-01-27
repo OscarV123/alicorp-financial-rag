@@ -39,7 +39,7 @@ while True:
     # mode = "strict" | "explanatory"
     res = qa.answer_question(
         question=q,
-        where=None,       
+        explicit_where=None,    
         temperature=0.1,
         mode="explanatory"
     )

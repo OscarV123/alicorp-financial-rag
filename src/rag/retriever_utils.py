@@ -355,3 +355,37 @@ def detect_signals(question: str) -> SignalMatch:
         )
     
     return best
+
+def merge_where(match_r: SignalMatch, explicit_where: Optional[Dict[str, Any]]=None) -> SignalMatch:
+    
+    if not explicit_where:
+        return match_r
+    
+    inferred = Dict(match_r.where or {})
+    ui = Dict(explicit_where)
+    
+    conflicts = []
+    for k, ui_val in ui.items():
+        if k in inferred and inferred[k] != ui_val:
+            conflicts.append({"key": k, "inferred": inferred[k], "ui": ui_val})
+            
+    inferred.update(ui)
+    effective_where = inferred
+    
+    new_debug = dict(match_r.debug or {})
+    new_debug["explicit_where"] = ui
+    if conflicts:
+        new_debug["where_conflicts"] = conflicts
+    new_debug["where_effective"] = dict(effective_where)
+
+    return SignalMatch(
+        key=match_r.key,
+        score=match_r.score,
+        where=effective_where,
+        debug=new_debug
+    )
+
+
+
+
+
