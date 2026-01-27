@@ -88,8 +88,8 @@ def retrieve(question: str,
     query_vector = embed_query(oai, question)
 
     match_r = retriever_utils.detect_signals(question)
-    match_r = retriever_utils.merge_where(match_r, explicit_where)  # ← reasignar
-    effective_where = match_r.where                                # ← dict final
+    match_r = retriever_utils.merge_where(match_r, explicit_where)
+    effective_where = match_r.where
 
     result = query_collection(collection, query_vector, top_k, effective_where)
     evidences = get_evidence(result)

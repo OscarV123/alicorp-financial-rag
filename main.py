@@ -2,6 +2,7 @@ import src.config as config
 import src.ingest.splitter as splitter
 import src.ingest.build_index as build_index
 import src.rag.qa as qa
+import app as api_endpoints
 
 #=================================================================
 #splitter.write_pages_to_jsonl(splitter.iter_pages_cleaned(), config.PAGES_FILE)
@@ -29,27 +30,28 @@ import src.rag.qa as qa
 #print(f"Total chunks indexados: {total_indexed}")
 #print(f"Vector store: {config.CHROMA_PATH} | Colección: rag_finanzas")
 #=================================================================
-while True:
-    q = input("Pregunta: ").strip()
-    if not q:
-        continue
-    if q.lower() in ("exit", "salir", "quit"):
-        break
-
-    # mode = "strict" | "explanatory"
-    res = qa.answer_question(
-        question=q,
-        explicit_where=None,    
-        temperature=0.1,
-        mode="explanatory"
-    )
-
-    print("\n--- RESPUESTA ---")
-    print(res.answer)
-
-    print("\n--- EVIDENCIA (debug) ---")
-    for i, ev in enumerate(res.evidences, start=1):
-        m = ev.metadata
-        print(f"[{i}] {m.get('doc_id')} pág.{m.get('page_number')} | dist={ev.distance:.4f}")
-        print(f"    chunk_id={ev.chunk_id}")
-    print()
+#while True:
+#    q = input("Pregunta: ").strip()
+#    if not q:
+#        continue
+#    if q.lower() in ("exit", "salir", "quit"):
+#        break
+#
+#    # mode = "strict" | "explanatory"
+#    res = qa.answer_question(
+#        question=q,
+#        explicit_where={"year": 2023},    
+#        temperature=0.1,
+#        mode="explanatory"
+#    )
+#
+#    print("\n--- RESPUESTA ---")
+#    print(res.answer)
+#
+#    print("\n--- EVIDENCIA (debug) ---")
+#    for i, ev in enumerate(res.evidences, start=1):
+#        m = ev.metadata
+#        print(f"[{i}] {m.get('doc_id')} pág.{m.get('page_number')} | dist={ev.distance:.4f}")
+#        print(f"    chunk_id={ev.chunk_id}")
+#    print()
+#================================================================

@@ -361,8 +361,8 @@ def merge_where(match_r: SignalMatch, explicit_where: Optional[Dict[str, Any]]=N
     if not explicit_where:
         return match_r
     
-    inferred = Dict(match_r.where or {})
-    ui = Dict(explicit_where)
+    inferred = dict(match_r.where or {})
+    ui = dict(explicit_where)
     
     conflicts = []
     for k, ui_val in ui.items():
