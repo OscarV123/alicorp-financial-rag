@@ -14,6 +14,12 @@
 from pathlib import Path
 import os
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 PDFS_PATH = Path("data/raw/")
 PAGES_FILE = Path("data/processed/pages.jsonl")
 CHUNKS_FILE = Path("data/processed/chunks.jsonl")

@@ -17,7 +17,7 @@ from typing import List, Dict, Any, Iterator, Set
 import chromadb
 from chromadb.config import Settings
 from openai import OpenAI
-from src.config import CHUNKS_FILE, CHROMA_PATH, BATCH_SIZE, EMBED_MODEL, API_KEY
+from src.config import CHUNKS_FILE, CHROMA_PATH, BATCH_SIZE, EMBED_MODEL
 
 def iter_chunks_from_file(chunks_file_path: Path) -> Iterator[Dict[str, Any]]:
     if not chunks_file_path.exists():
@@ -53,10 +53,10 @@ def batch_iter(chunks_generator: Iterator[Dict[str, Any]], batch_size: int) -> I
         yield batch
 
 def get_clients() -> tuple[OpenAI, chromadb.api.Collection]:
-    if not API_KEY:
+    if not os.getenv("OPENAI_API_KEY"):
         raise ValueError("La variable de entorno OPENAI_API_KEY no fue encontrada.")
     
-    oai = OpenAI(api_key=API_KEY)
+    oai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
     chroma = chromadb.PersistentClient(
         path=str(CHROMA_PATH),

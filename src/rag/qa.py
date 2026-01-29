@@ -19,6 +19,7 @@ from typing import List, Dict, Optional, Any, Tuple
 import src.rag.prompt as prompt
 import src.config as config
 from openai import OpenAI
+import os
 
 @dataclass
 class QAResult:
@@ -55,8 +56,8 @@ def answer_question(question: str,
                     explicit_where: Optional[Dict[str, Any]]=None,
                     temperature: float=0.1,
                     mode: str="strict") -> QAResult:
-    if not config.API_KEY:
-        raise ValueError("API_KEY no está configurada. Por favor, configure la clave de API para el LLM.")
+    if not os.getenv("OPENAI_API_KEY"):
+        raise ValueError("OPENAI_API_KEY no está configurada. Por favor, configure la clave de API para el LLM.")
     
     evidences = retriever.retrieve(question, top_k=top_k, explicit_where=explicit_where, return_debug=False)
               
@@ -76,7 +77,7 @@ def answer_question(question: str,
     
     messages = build_messages(question, evidences, mode)
     
-    client = OpenAI(api_key=config.API_KEY)
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = client.chat.completions.create(
         model=config.LLM_MODEL,
         messages=messages,
