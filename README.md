@@ -13,6 +13,7 @@ A complete full-stack Retrieval-Augmented Generation (RAG) web app for financial
 - `data/`: Contains the datasets used by the RAG pipeline, including raw and processed PDFs.
     - `processed/`: Preprocessed data generated from raw documents, including extracted text and chunked content prepared for embedding and indexing in ChromaDB.
     - `raw/`: Original financial documents (PDFs) in human-readable format, used as the primary source of truth.
+---
 - `src/`: Source code files for the application.
     - `ingest/`: Ingestion and preprocessing logic for extracting high-quality text chunks from raw financial PDFs.
         - **build_index.py**: Generates embeddings from chunks and persists them into the ChromaDB vector store (offline ingestion).
@@ -26,6 +27,7 @@ A complete full-stack Retrieval-Augmented Generation (RAG) web app for financial
         - **retriever_utils.py**: Parses the user question to infer intent (doc type, year/period, audit signals) and builds metadata filters (`where`)
         - **retriever.py**: Fetches top_k most relevant chunks from ChromaDB for a user question, applying metadata filters.
     - **config.py**: Central configuration for runtime settings (paths, models, top_k, batch size).
+---
 - `vector_store/`: Vector database files used by the RAG pipeline. *Ignored by Git but included in Docker builds*
 - **.dockerignore**: Files and directories excluded from the Docker build context.
 - **.gitignore**: Files and folders ignored by Git.
