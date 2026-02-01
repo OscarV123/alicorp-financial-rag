@@ -1,42 +1,30 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 import src.rag.qa as qa
-from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from pydantic import BaseModel, Field
+from typing import Optional, Dict, Any, Literal, Annotated
 
 class QueryRequest(BaseModel):
-    question: str
-    top_k: int = 10
+    question: str = Field(..., min_length=1, max_length=500)
+    top_k: Annotated[int, Field(ge=1, le=50)] = 10
     explicit_where: Optional[Dict[str, Any]] = None
-    mode: str = "strict"
-    
-# {
-#   "question": "¿y en 2022?",
-#   "top_k": 10,
-#   "mode": "strict",
-#   "multiturn": {
-#     "messages": [
-#       { "role": "user", "content": "¿Cuál fue el EBITDA en 2023?" },
-#       { "role": "assistant", "content": "Según la evidencia..." },
-#       { "role": "user", "content": "¿y en 2022?" }
-#     ],
-#     "history_window": 6
-#   }
-# }
+    mode: Literal["strict", "explanatory"] = "strict"
 
 app = FastAPI(title="RAG API", version="1.0.0")
+
     
 @app.post("/query")
-async def query_endpoint(req: QueryRequest) -> qa.QAResult | None:
+async def query_endpoint(req: QueryRequest) -> qa.QAResult:
     
-    question = req.question.strip()
-    if not question:
-        return None
-    
-    answer = qa.answer_question(question,
+    if req.question.strip() == "": 
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail="Question cannot be empty")
+
+    try:
+        return qa.answer_question(req.question,
                                 req.top_k, 
                                 req.explicit_where, 
                                 0.1,
                                 req.mode)
-
-    return answer
-    
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="An error occurred while processing the request")
