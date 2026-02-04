@@ -12,7 +12,6 @@
 # - Permitir cambiar el comportamiento del pipeline desde un solo lugar.        |
 # ==============================================================================|
 from pathlib import Path
-import os
 
 try:
     from dotenv import load_dotenv
@@ -24,7 +23,6 @@ PDFS_PATH = Path("data/raw/")
 PAGES_FILE = Path("data/processed/pages.jsonl")
 CHUNKS_FILE = Path("data/processed/chunks.jsonl")
 CHROMA_PATH = Path("vector_store")
-API_KEY = os.getenv("OPENAI_API_KEY")
 BATCH_SIZE = 128
 EMBED_MODEL = "text-embedding-3-small"
 TOP_K = 10

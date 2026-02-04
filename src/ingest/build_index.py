@@ -17,7 +17,7 @@ from typing import List, Dict, Any, Iterator, Set
 import chromadb
 from chromadb.config import Settings
 from openai import OpenAI
-from src.config import CHUNKS_FILE, CHROMA_PATH, BATCH_SIZE, EMBED_MODEL
+from src.config import CHROMA_PATH, EMBED_MODEL
 
 def iter_chunks_from_file(chunks_file_path: Path) -> Iterator[Dict[str, Any]]:
     if not chunks_file_path.exists():

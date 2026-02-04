@@ -16,7 +16,7 @@ import src.ingest.build_index as build_index
 from openai import OpenAI
 from typing import List, Any, Optional
 import src.config as config
-from typing import Dict, Any, Tuple
+from typing import Dict, Any
 import src.rag.retriever_utils as retriever_utils
 
 @dataclass

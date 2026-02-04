@@ -3,7 +3,7 @@ import src.rag.qa as qa
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, Literal, Annotated
 from src.ingest.build_index import get_clients
-from src.backend.utils import require_api_key, rate_limit
+from src.backend.backend_utils import require_api_key, rate_limit
 import os
 
 class QueryRequest(BaseModel):
