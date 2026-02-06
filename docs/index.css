@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body{
+  height: 100%;
+}
+
+:root{
+  --bg: #efefef;
+  --panel: #e7dfa6ba;
+  --border: rgba(89, 89, 89, 0.318);
+  --muted-border: rgba(255,255,255,0.12);
+  --text: #e9e9ea;
+  --muted: rgba(0, 0, 0, 0.7);
+  --thumb: #ffff4f;
+}

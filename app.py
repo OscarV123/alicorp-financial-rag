@@ -5,6 +5,7 @@ from typing import Optional, Dict, Any, Literal, Annotated
 from src.ingest.build_index import get_clients
 from src.backend.backend_utils import require_api_key, rate_limit
 import os
+import re
 
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=500)
@@ -19,6 +20,7 @@ async def query_endpoint(req: QueryRequest, request: Request) -> qa.QAResult:
     rate_limit(request)
     
     question = req.question.strip()
+    question = re.sub(r"\s+", " ", question)
     
     if question == "": 
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

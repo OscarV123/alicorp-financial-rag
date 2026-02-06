@@ -78,10 +78,14 @@ def answer_question(question: str,
     messages = build_messages(question, evidences, mode)
     
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    
+    max_tokens = config.MAX_TOKENS_STRICT if mode == "strict" else config.MAX_TOKENS_EXPLANATORY
+    
     response = client.chat.completions.create(
         model=config.LLM_MODEL,
         messages=messages,
-        temperature=temperature
+        temperature=temperature,
+        max_tokens=max_tokens
     )
     
     answer = (response.choices[0].message.content or "").strip()
