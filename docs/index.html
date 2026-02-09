@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>alicorp-financial-rag</title>
     <link rel="stylesheet" href="index.css"/>
     <link rel="stylesheet" href="left_panel.css"/>
@@ -41,19 +41,14 @@
         </section>
     -->
     <!-- Duplicar card para ver más evidencias -->
-    
-    
-    
-    
+     
     <section class="mid-panel">
         <header class="descriptive-title">
             <h1>Alicorp Financial Rag (Retrieval-Augmented Generation)</h1>
         </header>
         <main class="chat-area">
             <div class="message-bot">
-                <div class="bubble">
-                    Hola. Pregúntame algo sobre los EEFF, Hechos de Importancia o Earnings Reports de Alicorp.
-                </div>
+                Hola. Pregúntame algo sobre los EEFF, Hechos de Importancia o Earnings Reports de Alicorp.
             </div>
 
             <!-- User -->
@@ -65,9 +60,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-                </div>
+                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
             </div>
 
             <!-- User -->
@@ -79,9 +72,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-                </div>
+                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
             </div>
 
             <!-- User -->
@@ -93,9 +84,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-                </div>
+                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
             </div>
 
             <!-- User -->
@@ -107,9 +96,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-                </div>
+                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
             </div>
 
             <!-- User -->
@@ -121,9 +108,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-                </div>
+                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
             </div>
 
             <!-- User -->
@@ -135,9 +120,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-                </div>
+                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
             </div>
 
             <!-- User -->
@@ -149,9 +132,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-                </div>
+                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
             </div>
 
             <!-- User -->
@@ -163,9 +144,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-                </div>
+                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
             </div>
 
             <!-- User -->
@@ -177,9 +156,7 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-                </div>
+                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
             </div>
 
             <!-- User -->
@@ -191,29 +168,26 @@
 
             <!-- Bot -->
             <div class="message-bot">
-                <div class="bubble">
-                    Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-                </div>
+                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
             </div>
         </main>
         <div class="composer">
             <div class="composer-inner">
-                <input
+                <textarea
                     id="question"
                     name="rag_question_2026"
                     type="text"
-                    maxlength="500"
                     placeholder="Usa filtros para mejorar la calidad de la respuesta..."
                     autocomplete="new-password"
                     autocapitalize="off"
                     autocorrect="off"
                     spellcheck="false"
-                />
-                <button class="send-btn" aria-label="Send">></button>
+                ></textarea>
+                <button id="send-btn" class="send-btn" aria-label="Send">></button>
             </div>
-            <div class="counter">0/500</div>
+            <div id="counter" class="counter">0/500</div>
         </div>
     </section>
-    
+    <script src="index.js"></script>
 </body>
 </html>

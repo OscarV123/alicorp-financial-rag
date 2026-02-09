@@ -8,6 +8,11 @@ html, body{
   height: 100%;
 }
 
+body{
+  margin: 0;
+  overflow-y: auto;   /* scroll del navegador */
+}
+
 :root{
   --bg: #efefef;
   --panel: #e7dfa6ba;
