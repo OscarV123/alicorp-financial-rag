@@ -11,10 +11,9 @@
     <link rel="icon" href="../assets/icon.ico"/>
 </head>
 <body>
-    <!--
-        <section class="left-panel">
+    <section class="left-panel">
         <div class="evidence-box">
-        <h2>Evidence</h2>
+            <h2>Evidence</h2>
             <div class="evidences">
                 <article class="work-card">
                     <div class="work-thumb" aria-label="Preview image (placeholder)">
@@ -36,10 +35,97 @@
                         </div>
                     </div>
                 </article>
-                </div>
             </div>
-        </section>
-    -->
+            <div class="evidences">
+                <article class="work-card">
+                    <div class="work-thumb" aria-label="Preview image (placeholder)">
+                        <div class="work-thumb-inner">
+                            <img
+                                class="thumb-img"
+                                src="../assets/dif_pdf.png"
+                                alt="Vista previa de la evidencia"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+                    <div class="work-meta">
+                        <div class="work-left">
+                            <div class="work-text">
+                                <div class="work-title">Evidencia #1</div>
+                                <div class="work-subtitle">Nombre del documento y página</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="evidences">
+                <article class="work-card">
+                    <div class="work-thumb" aria-label="Preview image (placeholder)">
+                        <div class="work-thumb-inner">
+                            <img
+                                class="thumb-img"
+                                src="../assets/dif_pdf.png"
+                                alt="Vista previa de la evidencia"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+                    <div class="work-meta">
+                        <div class="work-left">
+                            <div class="work-text">
+                                <div class="work-title">Evidencia #1</div>
+                                <div class="work-subtitle">Nombre del documento y página</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="evidences">
+                <article class="work-card">
+                    <div class="work-thumb" aria-label="Preview image (placeholder)">
+                        <div class="work-thumb-inner">
+                            <img
+                                class="thumb-img"
+                                src="../assets/dif_pdf.png"
+                                alt="Vista previa de la evidencia"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+                    <div class="work-meta">
+                        <div class="work-left">
+                            <div class="work-text">
+                                <div class="work-title">Evidencia #1</div>
+                                <div class="work-subtitle">Nombre del documento y página</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="evidences">
+                <article class="work-card">
+                    <div class="work-thumb" aria-label="Preview image (placeholder)">
+                        <div class="work-thumb-inner">
+                            <img
+                                class="thumb-img"
+                                src="../assets/dif_pdf.png"
+                                alt="Vista previa de la evidencia"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+                    <div class="work-meta">
+                        <div class="work-left">
+                            <div class="work-text">
+                                <div class="work-title">Evidencia #1</div>
+                                <div class="work-subtitle">Nombre del documento y página</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
     <!-- Duplicar card para ver más evidencias -->
      
     <section class="mid-panel">
@@ -188,6 +274,53 @@
             <div id="counter" class="counter">0/500</div>
         </div>
     </section>
+    
+    <aside class="right-panel">
+        <div class="right-card">
+            <h3>Redes sociales</h3>
+
+            <div class="social-row">
+                <a class="social" href="https://github.com/OscarV123?tab=overview" target="_blank" rel="noopener">
+                    <img class="social-icon icon-gh" src="../assets/github_icon.svg" alt="GitHub">
+                </a>
+
+                <a class="social" href="https://www.linkedin.com/in/oscar-valderrama-bautista" target="_blank" rel="noopener">
+                    <img class="social-icon icon-in" src="../assets/linkedin_icon.svg" alt="LinkedIn">
+                </a>
+
+                <a class="social" href="https://www.youtube.com/@FishyMIDI" target="_blank" rel="noopener">
+                    <img class="social-icon icon-yt" src="../assets/youtube_icon.svg" alt="YouTube">
+                </a>
+            </div>
+
+            <p class="right-subtitle">Enlace a mi otro proyecto</p>
+
+            <a class="project-link" href="https://oscarv123.github.io/image-classification-resnet18/" target="_blank" rel="noopener">
+                <img class="project-avatar" src="../assets/profile.jpg" alt="Avatar">
+                <span>image-classification-resnet18</span>
+            </a>
+        </div>
+
+        <div class="right-card filters-card">
+            <h3>Filtrar por</h3>
+
+            <label class="filter-label" for="fYear">Año</label>
+            <select id="fYear" class="filter-select">
+                <option value="">Todos</option>
+                <option>2023</option>
+                <option>2022</option>
+            </select>
+
+            <label class="filter-label" for="fDoc">Tipo de documento</label>
+            <select id="fDoc" class="filter-select">
+                <option value="">Todos</option>
+                <option>EEFF</option>
+                <option>Hecho de Importancia</option>
+                <option>Earnings</option>
+            </select>
+        </div>
+    </aside>
+
     <script src="index.js"></script>
 </body>
 </html>

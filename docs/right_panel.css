@@ -1,0 +1,105 @@
+.right-panel{
+  position: fixed;
+  top: 98px;
+  right: 85px;
+  width: 280px;
+  z-index: 999;
+}
+
+.right-card{
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 14px;
+  padding: 14px;
+  width: 300px;
+  height: 240px;
+}
+
+.right-subtitle{
+  padding-top: 12px;
+}
+
+.mid-panel{
+  margin-right: 0;
+}
+
+.social-row{
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+.social{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  text-decoration: none;
+  line-height: 0;
+}
+
+.social-icon{
+  width: 56px;
+  height: 56px;
+  display: block;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.icon-gh,
+.icon-in{
+  width: 46px;
+  height: 46px;
+}
+
+.icon-yt{
+  width: 70px;
+  height: 70px;
+}
+
+.project-link{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.project-avatar{
+  width: 50px;
+  height: 50px;
+  display: block;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.filters-card{
+  margin-top: 59px;
+}
+
+.right-card.filters-card{
+  height: 204px;
+}
+
+.filter-label{
+  display: block;
+  margin: 10px 0 6px;
+  font-size: 13px;
+  color: rgba(0,0,0,0.75);
+}
+
+.filter-select{
+  width: 100%;
+  padding: 10px 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 10px;
+  background: #fff;
+  outline: none;
+}

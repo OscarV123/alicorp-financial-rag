@@ -10,15 +10,15 @@ html, body{
 
 body{
   margin: 0;
-  overflow-y: auto;   /* scroll del navegador */
+  overflow-y: auto;
 }
 
 :root{
   --bg: #efefef;
-  --panel: #e7dfa6ba;
+  --panel: #ffffffba;
   --border: rgba(89, 89, 89, 0.318);
   --muted-border: rgba(255,255,255,0.12);
   --text: #e9e9ea;
   --muted: rgba(0, 0, 0, 0.7);
-  --thumb: #ffff4f;
+  --thumb: #dcdcdc;
 }

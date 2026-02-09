@@ -14,7 +14,7 @@
   text-align: center;
   padding: 26px 0 14px;
   border-bottom: 1px solid rgba(0,0,0,0.08);
-  background: var(--bg)
+  background: var(--bg);
 }
 
 .chat-area{
@@ -51,7 +51,7 @@
   border: 1px solid rgba(0,0,0,0.10);
   border-radius: 14px;
   padding: 10px 12px;
-  color:#111;
+  color: #111;
 }
 
 .composer{
@@ -74,8 +74,8 @@
   border: 1px solid rgba(0,0,0,0.10);
   border-radius: 14px;
   box-sizing: border-box;
-  padding: 6px 8px;    
-  height: auto;  
+  padding: 6px 8px;
+  height: auto;
 }
 
 .composer-inner textarea{
@@ -87,10 +87,9 @@
   font-size: 14px;
   overflow-y: auto;
   color: #111;
-  display: block;  
+  display: block;
   padding-left: 12px;
-  height: 27px;;
-  
+  height: 27px;
 }
 
 .counter{
@@ -121,13 +120,11 @@
   transform: scale(0.98);
 }
 
-
-
 @media (max-width: 600px){
   .mid-panel{
-    padding: 0px 12px 97px;
+    padding: 0px 12px 20px;
   }
-  
+
   .descriptive-title{
     padding: 18px 0 14px;
   }
@@ -135,14 +132,13 @@
   .descriptive-title h1{
     font-size: 22px;
   }
-  
+
   .chat-area{
     padding: 10px 4px 0px;
     gap: 6px;
   }
-  
+
   .bubble{
-    max-width: none;
     width: fit-content;
     max-width: 100%;
     padding: 8px 10px;
