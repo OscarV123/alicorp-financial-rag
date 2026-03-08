@@ -14,11 +14,28 @@ body{
 }
 
 :root{
-  --bg: #efefef;
-  --panel: #ffffffba;
-  --border: rgba(89, 89, 89, 0.318);
-  --muted-border: rgba(255,255,255,0.12);
-  --text: #e9e9ea;
+  --bg: #ffffff;
+  --secondary-bg: #e9eef6;
+  --text: #000000;
+  --muted-border: rgba(0, 0, 0,0.12);
   --muted: rgba(0, 0, 0, 0.7);
   --thumb: #dcdcdc;
+  --message-text-area: #fbfdff;
+  --send-button: #e5efff;
+  --send-button-active: #cad5e6;
+  --border-button-theme: rgba(0,0,0,0.18);
+}
+
+
+body.theme-dark{
+  --bg: #212121;
+  --secondary-bg: #424242;
+  --text: #e5e7eb;
+  --muted-border: rgba(255, 255, 255, 0.14);
+  --muted: rgba(229,231,235,0.75);
+  --thumb: rgba(255,255,255,0.10);
+  --message-text-area: #454545;
+  --send-button: #67696b;
+  --send-button-active: #7c8188;
+  --border-button-theme: rgba(255, 255, 255, 0.293);
 }

@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>alicorp-financial-rag</title>
+    <title>RAG financiero</title>
     <link rel="stylesheet" href="index.css"/>
     <link rel="stylesheet" href="left_panel.css"/>
     <link rel="stylesheet" href="mid_panel.css"/>
     <link rel="stylesheet" href="right_panel.css"/>
+    <link rel="stylesheet" href="responsive.css"/>
     <link rel="icon" href="../assets/icon.ico"/>
 </head>
 <body>
-    <section class="left-panel">
+    <section class="left-panel" id="left-panel">
         <div class="evidence-box">
             <h2>Evidence</h2>
             <div class="evidences">
-                <article class="work-card">
+                <article class="work-card" id="work-card">
                     <div class="work-thumb" aria-label="Preview image (placeholder)">
                         <div class="work-thumb-inner">
                             <img
@@ -37,7 +38,7 @@
                 </article>
             </div>
             <div class="evidences">
-                <article class="work-card">
+                <article class="work-card" id="work-card">
                     <div class="work-thumb" aria-label="Preview image (placeholder)">
                         <div class="work-thumb-inner">
                             <img
@@ -59,7 +60,7 @@
                 </article>
             </div>
             <div class="evidences">
-                <article class="work-card">
+                <article class="work-card" id="work-card">
                     <div class="work-thumb" aria-label="Preview image (placeholder)">
                         <div class="work-thumb-inner">
                             <img
@@ -81,7 +82,7 @@
                 </article>
             </div>
             <div class="evidences">
-                <article class="work-card">
+                <article class="work-card" id="work-card">
                     <div class="work-thumb" aria-label="Preview image (placeholder)">
                         <div class="work-thumb-inner">
                             <img
@@ -103,7 +104,7 @@
                 </article>
             </div>
             <div class="evidences">
-                <article class="work-card">
+                <article class="work-card" id="work-card">
                     <div class="work-thumb" aria-label="Preview image (placeholder)">
                         <div class="work-thumb-inner">
                             <img
@@ -128,134 +129,31 @@
     </section>
     <!-- Duplicar card para ver más evidencias -->
      
+    
+
     <section class="mid-panel">
         <header class="descriptive-title">
-            <h1>Alicorp Financial Rag (Retrieval-Augmented Generation)</h1>
+            <div class="title-bar">
+                <button class="hamburger hamburger-left" id="btn-left" aria-label="Abrir Evidence">
+                    <img class="hamburger-icon" src="../assets/libro_abierto.png" alt="" aria-hidden="true">
+                </button>
+
+                <div class="title-inner">
+                    <h1>Alicorp Financial Rag (Retrieval-Augmented Generation)</h1>
+                </div>
+
+                <button class="hamburger hamburger-right" id="btn-right" aria-label="Abrir Filtros">
+                    <img class="hamburger-icon" src="../assets/filtrar.png" alt="" aria-hidden="true">
+                </button>
+            </div>
         </header>
+
         <main class="chat-area">
+            
             <div class="message-bot">
-                Hola. Pregúntame algo sobre los EEFF, Hechos de Importancia o Earnings Reports de Alicorp.
+                <p class="msg-text">Hola. Pregúntame lo que necesites sobre los EEFF, Hechos de Importancia o reportes de resultados de Alicorp. También puedes usar el comando <b>/sugerir</b> para obtener ejemplos de preguntas al azar.</p>
             </div>
 
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Cuál fue el total de efectivo y equivalente de efectivo en 2023?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Y qué incluye ese rubro?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Cuál fue el total de efectivo y equivalente de efectivo en 2023?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Y qué incluye ese rubro?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Cuál fue el total de efectivo y equivalente de efectivo en 2023?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Y qué incluye ese rubro?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Cuál fue el total de efectivo y equivalente de efectivo en 2023?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Y qué incluye ese rubro?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Cuál fue el total de efectivo y equivalente de efectivo en 2023?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                En 2023, el efectivo y equivalente de efectivo fue S/ 1,493,778,000 (EEFF auditados 2023, pág. 36).
-            </div>
-
-            <!-- User -->
-            <div class="message-user">
-                <div class="bubble">
-                    ¿Y qué incluye ese rubro?
-                </div>
-            </div>
-
-            <!-- Bot -->
-            <div class="message-bot">
-                Incluye caja y cuentas corrientes, depósitos a plazo, otros equivalentes y fondos restringidos (pág. 36).
-            </div>
         </main>
         <div class="composer">
             <div class="composer-inner">
@@ -269,14 +167,16 @@
                     autocorrect="off"
                     spellcheck="false"
                 ></textarea>
-                <button id="send-btn" class="send-btn" aria-label="Send">></button>
+                <button id="send-btn" class="send-btn" aria-label="Send">
+                    <span class="send-tri" aria-hidden="true"></span>
+                </button>
             </div>
             <div id="counter" class="counter">0/500</div>
         </div>
     </section>
     
-    <aside class="right-panel">
-        <div class="right-card">
+    <aside class="right-panel" id="right-panel">
+        <div class="right-card" id="right-card">
             <h3>Redes sociales</h3>
 
             <div class="social-row">
@@ -289,7 +189,7 @@
                 </a>
 
                 <a class="social" href="https://www.youtube.com/@FishyMIDI" target="_blank" rel="noopener">
-                    <img class="social-icon icon-yt" src="../assets/youtube_icon.svg" alt="YouTube">
+                    <img class="social-icon icon-yt" src="../assets/youtube.png" alt="YouTube">
                 </a>
             </div>
 
@@ -301,12 +201,13 @@
             </a>
         </div>
 
-        <div class="right-card filters-card">
+        <div class="right-card filters-card" id="right-card-filters-card">
             <h3>Filtrar por</h3>
 
             <label class="filter-label" for="fYear">Año</label>
             <select id="fYear" class="filter-select">
                 <option value="">Todos</option>
+                <option>2024</option>
                 <option>2023</option>
                 <option>2022</option>
             </select>
@@ -314,13 +215,108 @@
             <label class="filter-label" for="fDoc">Tipo de documento</label>
             <select id="fDoc" class="filter-select">
                 <option value="">Todos</option>
-                <option>EEFF</option>
-                <option>Hecho de Importancia</option>
-                <option>Earnings</option>
+                <option>Estados financieros</option>
+                <option>Hecho de importancia</option>
+                <option>Reporte de resultados</option>
             </select>
         </div>
+
+        <div class="right-card response-card" id="right-card-response">
+            <h3>Tipo de respuesta</h3>
+
+            <div class="response-row">
+                <div class="toggle-wrapper">
+                    <span class="toggle-label left">Estricto</span>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="responseMode">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label right">Explicatorio</span>
+                </div>
+
+                <div class="evidence-inline">
+                    <label class="evidence-label" for="responseTopK">
+                        Cantidad de evidencia
+                    </label>
+
+                    <div class="stepper">
+                        <button type="button" class="step-btn" id="minusBtn">−</button>
+                        <input
+                            type="number"
+                            id="responseTopK"
+                            class="response-input"
+                            min="1"
+                            max="10"
+                            value="5"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                        />
+                        <button type="button" class="step-btn" id="plusBtn">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="theme-row">
+            <button class="theme-btn is-active" type="button" data-theme="light" aria-label="Tema claro">
+                <img src="../assets/tema_claro.png" alt="Tema claro">
+            </button>
+
+            <button class="theme-btn" type="button" data-theme="dark" aria-label="Tema oscuro">
+                <img src="../assets/tema_oscuro.png" alt="Tema oscuro">
+            </button>
+        </div>
+
     </aside>
 
     <script src="index.js"></script>
+    <script src="responsive.js"></script>
+    <script src="theme.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const input = document.getElementById("responseTopK");
+            const minus = document.getElementById("minusBtn");
+            const plus  = document.getElementById("plusBtn");
+
+            input.addEventListener("keydown", (e) => {
+                if (["e", "E", "+", "-"].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            input.addEventListener("input", () => {
+                input.value = input.value.replace(/[^0-9]/g, "");
+
+                const min = parseInt(input.min, 10);
+                const max = parseInt(input.max, 10);
+                let value = parseInt(input.value, 10);
+
+                if (!isNaN(value)) {
+                    if (value < min) input.value = min;
+                    if (value > max) input.value = max;
+                }
+            });
+
+            minus.addEventListener("click", () => {
+                const min = parseInt(input.min, 10);
+                const current = parseInt(input.value, 10) || min;
+                if (current > min) {
+                input.value = current - 1;
+                }
+            });
+
+            plus.addEventListener("click", () => {
+                const max = parseInt(input.max, 10);
+                const current = parseInt(input.value, 10) || max;
+                if (current < max) {
+                input.value = current + 1;
+                }
+            });
+
+        });
+    </script>
+    <div class="overlay" id="overlay" hidden></div>
 </body>
 </html>

@@ -2,14 +2,13 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 350px;
-  height: 752px;
-  margin-top: 77px;
+  width: 338px;
+  height: 100%;
   padding: 18px 14px;
-  background: var(--bg);
-  border-right: 1px solid var(--border);
+  background: var(--secondary-bg);
   overflow-y: auto;
   direction: rtl;
+  z-index: 2000;
 }
 
 .evidence-box{
@@ -22,6 +21,7 @@
   font-size: 18px;
   font-weight: 650;
   letter-spacing: 0.2px;
+  color: var(--text);
 }
 
 .evidences{
@@ -30,12 +30,11 @@
 }
 
 .work-card{
-  width: 280px;
-  background: var(--panel);
-  border: 1px solid var(--border);
+  width: 265px;
+  background: var(--send-button);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgb(189, 184, 184);
+  box-shadow: 0 0px 4px rgb(189, 184, 184);
 }
 
 .work-thumb{
@@ -106,8 +105,10 @@
 }
 
 .work-meta{
-  padding: 12px 12px 14px;
-  border-top: 1px solid rgba(118, 118, 118, 0.54);
+  padding-top: 0px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 14px;
 }
 
 .work-title{
@@ -117,7 +118,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #000000;
+  color: var(--text);
 }
 
 .work-subtitle{
@@ -128,3 +129,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+

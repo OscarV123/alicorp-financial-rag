@@ -40,9 +40,9 @@ import app as api_endpoints
 #    # mode = "strict" | "explanatory"
 #    res = qa.answer_question(
 #        question=q,
-#        explicit_where={"year": 2023},    
+#        explicit_where=None,    
 #        temperature=0.1,
-#        mode="explanatory"
+#        mode="strict"
 #    )
 #
 #    print("\n--- RESPUESTA ---")
@@ -54,4 +54,4 @@ import app as api_endpoints
 #        print(f"[{i}] {m.get('doc_id')} pág.{m.get('page_number')} | dist={ev.distance:.4f}")
 #        print(f"    chunk_id={ev.chunk_id}")
 #    print()
-#================================================================
+#================================================================ 

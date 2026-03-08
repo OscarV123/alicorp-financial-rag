@@ -1,0 +1,88 @@
+/* =========================
+   OVERLAY
+========================= */
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1200;
+}
+
+/* =========================
+   DRAWER (MÓVIL/TABLET)
+========================= */
+@media (max-width: 1700px){
+
+  #left-panel,
+  #right-panel{
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: min(320px, 85vw);
+    z-index: 1300;
+    overflow-y: auto;
+
+    padding-top: 42px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+
+    transition: transform 220ms ease;
+    will-change: transform;
+  }
+
+  #left-panel{
+    left: 0;
+    transform: translateX(-105%);
+    background: var(--secondary-bg);
+  }
+
+  #right-panel{
+    right: 0;
+    transform: translateX(105%);
+    background-color: var(--bg);
+  }
+
+  #left-panel.is-open{ transform: translateX(0); }
+  #right-panel.is-open{ transform: translateX(0); }
+
+  #right-card,
+  #right-card-filters-card,
+  #right-card-response{
+    margin: 0 12px;
+    width: calc(100% - 24px);
+    font-size: 15px;
+  }
+
+  #right-card-filters-card,
+  #right-card-response{
+    margin-top: 16px;
+  }
+
+  #work-card{
+    background: var(--send-button);
+  }
+}
+
+/* =========================
+   DESKTOP
+========================= */
+@media (min-width: 1701px){
+  .hamburger{ display: none; }
+}
+
+/* =========================
+    PANTALLAS MUY CHICAS (320)
+========================= */
+@media (max-width: 320px){
+  .descriptive-title h1{ font-size: 20px; }
+  .chat-area{ padding: 86px 4px 0px; }
+  #work-card{
+    width: 221px;
+  }
+  .theme-row{
+    margin-left: 150px;
+  }
+  .social-row{
+    gap: 34px;
+  }
+}
