@@ -105,6 +105,7 @@ print("\n")
 def iter_pages_cleaned():
     for pdf in PDFS_PATH.rglob("*.pdf"):
         for page in full_extract_document(pdf):
+            print("still alive")
             clean_t = clean_text(page["page_text"], page.get("doc_type", ""))
             page["page_text"] = clean_t
 
