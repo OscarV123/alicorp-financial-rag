@@ -110,12 +110,10 @@ def iter_pages_cleaned():
             page["page_text"] = clean_t
 
             
-            
             tables = table_content_extractor(page)
             if tables:
                 page.setdefault("tables", []).extend(tables)
                 page["page_text"] = remove_table_lines(page)
-                print(page)
             
             yield page
 
