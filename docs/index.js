@@ -47,12 +47,9 @@ function preventOverflow(e) {
 }
 
 function enforceMaxChars() {
-  let n = getNormalized();
-
+  let n = ta.value;
   if (n.length > MAX_CHARS) n = n.slice(0, MAX_CHARS);
-
   if (ta.value !== n) ta.value = n;
-
   autoGrow();
   updateCharCount();
 }

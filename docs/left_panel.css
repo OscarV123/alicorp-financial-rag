@@ -2,26 +2,45 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 338px;
+  width: 310px;
   height: 100%;
   padding: 18px 14px;
   background: var(--secondary-bg);
+  border-right: 1px solid var(--border);
   overflow-y: auto;
   direction: rtl;
+  transition: transform var(--dur) var(--ease);
   z-index: 2000;
 }
 
-.evidence-box{
-  margin-left: 12.5px;
+.left-panel::-webkit-scrollbar {
+  width: 3px;
+}
+.left-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.left-panel::-webkit-scrollbar-thumb {
+  background: var(--thumb);
+  border-radius: var(--r-full);
+}
+
+.evidence-box {
+  margin-left: 4px;
   direction: ltr;
 }
 
-.evidence-box h2{
-  margin: 0 0 14px 0;
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: 0.2px;
-  color: var(--text);
+.evidence-box h2 {
+  margin: 0 0 18px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.evidences {
+  display: grid;
+  padding-bottom: 12px;
 }
 
 .evidences{
@@ -31,25 +50,34 @@
 
 .work-card{
   width: 265px;
-  background: var(--send-button);
-  border-radius: 14px;
+  background: var(--accent-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
   overflow: hidden;
-  box-shadow: 0 0px 4px rgb(189, 184, 184);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  transition:
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.work-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-border);
+  transform: translateY(-1px);
+}
+
+.work-card:active {
+  transform: translateY(0px);
+  box-shadow: var(--shadow-xs);
 }
 
 .work-thumb{
   padding: 12px 12px 10px;
 }
 
-.work-thumb-inner{
-  height: 140px;
-  border-radius: 12px;
-  background: var(--thumb);
-  border: 1px solid var(--muted-border);
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-}
+
 
 .thumb-img{
   width: 100%;
@@ -105,7 +133,7 @@
 }
 
 .work-meta{
-  padding-top: 0px;
+  padding-top: 14px;
   padding-left: 12px;
   padding-right: 12px;
   padding-bottom: 14px;

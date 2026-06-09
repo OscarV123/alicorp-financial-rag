@@ -103,9 +103,12 @@ def write_pages_to_jsonl(pages_iter: Iterator[dict], out_path: Path) -> int:
    
 print("\n")
 def iter_pages_cleaned():
+    iteracion = 1
     for pdf in PDFS_PATH.rglob("*.pdf"):
         for page in full_extract_document(pdf):
-            print("still alive")
+            print("still alive " + str(iteracion))
+            iteracion += 1
+
             clean_t = clean_text(page["page_text"], page.get("doc_type", ""))
             page["page_text"] = clean_t
 

@@ -1,41 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-html, body{
+html, body {
   height: 100%;
 }
 
-body{
+body {
   margin: 0;
   overflow-y: auto;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-:root{
-  --bg: #ffffff;
-  --secondary-bg: #e9eef6;
-  --text: #000000;
-  --muted-border: rgba(0, 0, 0,0.12);
-  --muted: rgba(0, 0, 0, 0.7);
-  --thumb: #dcdcdc;
-  --message-text-area: #fbfdff;
-  --send-button: #e5efff;
-  --send-button-active: #cad5e6;
-  --border-button-theme: rgba(0,0,0,0.18);
+:root {
+  /* Surfaces */
+  --bg:              #f4f5f8;
+  --bg-panel:        #ffffff;
+  --bg-card:         #ffffff;
+  --bg-input:        #ffffff;
+  --bg-chip:         #eef0f5;
+  --bg-accent:       #eef2ff;
+  --secondary-bg:    #eef0f5;
+
+  /* Accent */
+  --accent:          #4f6ef7;
+  --accent-muted:    #7b96fa;
+  --accent-surface:  #eef2ff;
+  --accent-border:   #c7d2fd;
+
+  /* Text */
+  --text:            #0f1117;
+  --text-secondary:  #464d69;
+  --text-tertiary:   #9299b0;
+  --muted:           #7b8198;
+
+  /* Borders */
+  --border:          rgba(15, 17, 23, 0.08);
+  --border-strong:   rgba(15, 17, 23, 0.14);
+  --muted-border:    rgba(15, 17, 23, 0.08);
+
+  /* Shadows */
+  --shadow-xs:       0 1px 2px rgba(15, 17, 23, 0.04);
+  --shadow-sm:       0 1px 4px rgba(15, 17, 23, 0.06), 0 0 0 1px rgba(15, 17, 23, 0.04);
+  --shadow-md:       0 4px 12px rgba(15, 17, 23, 0.08), 0 1px 3px rgba(15, 17, 23, 0.05);
+  --shadow-card:     0 0 0 1px rgba(15,17,23,0.06), 0 2px 8px rgba(15,17,23,0.06);
+
+  /* State */
+  --thumb:           #d4d8e5;
+  --message-text-area: #ffffff;
+  --send-button:     var(--accent-surface);
+  --send-button-active: #dce4fd;
+  --border-button-theme: var(--accent);
+
+  /* Typography */
+  --font:            'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-mono:       'DM Mono', 'Fira Mono', monospace;
+
+  /* Radii */
+  --r-sm:  8px;
+  --r-md:  12px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-full: 999px;
+
+  /* Spacing rhythm */
+  --sp-xs: 6px;
+  --sp-sm: 10px;
+  --sp-md: 16px;
+  --sp-lg: 24px;
+  --sp-xl: 32px;
+
+  /* Transition */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur:  180ms;
 }
 
+body.theme-dark {
+  --bg:              #0d0f14;
+  --bg-panel:        #13161e;
+  --bg-card:         #1a1e28;
+  --bg-input:        #1e2230;
+  --bg-chip:         #1e2230;
+  --bg-accent:       #1a2040;
+  --secondary-bg:    #1a1e28;
 
-body.theme-dark{
-  --bg: #212121;
-  --secondary-bg: #424242;
-  --text: #e5e7eb;
-  --muted-border: rgba(255, 255, 255, 0.14);
-  --muted: rgba(229,231,235,0.75);
-  --thumb: rgba(255,255,255,0.10);
-  --message-text-area: #454545;
-  --send-button: #67696b;
-  --send-button-active: #7c8188;
-  --border-button-theme: rgba(255, 255, 255, 0.293);
+  --accent:          #6a84ee;
+  --accent-muted:    #8fa4fa;
+  --accent-surface:  #282c44;
+  --accent-border:   #2d3d80;
+
+  --text:            #eaedf5;
+  --text-secondary:  #d0d5e6;
+  --text-tertiary:   #5c627a;
+  --muted:           #7b8198;
+
+  --border:          rgba(255, 255, 255, 0.07);
+  --border-strong:   rgba(255, 255, 255, 0.12);
+  --muted-border:    rgba(255, 255, 255, 0.07);
+
+  --shadow-xs:       0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm:       0 1px 4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05);
+  --shadow-md:       0 4px 12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-card:     0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3);
+
+  --thumb:           #2d3348;
+  --message-text-area: #1e2230;
+  --send-button:     #1e2848;
+  --send-button-active: #253158;
+  --border-button-theme: var(--accent);
 }
