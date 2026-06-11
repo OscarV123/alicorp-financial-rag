@@ -72,18 +72,59 @@ function appendUserMessage(text) {
   scrollToBottom();
 }
 
-function appendBotMessage(text) {
+function appendBotMessage(text, isStreaming = false) {
   const wrap = document.createElement("div");
   wrap.className = "message-bot";
 
-  const p = document.createElement("p");
-  p.className = "msg-text";
-  p.textContent = text;
-
-  wrap.appendChild(p);
+  const contentContainer = document.createElement("div");
+  contentContainer.className = "msg-text-container"; 
+  
+  wrap.appendChild(contentContainer);
   chatArea.appendChild(wrap);
-
   scrollToBottom();
+
+  const htmlFormateado = marked.parse(text, { breaks: true });
+
+  if (isStreaming) {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = htmlFormateado;
+    
+    const childNodes = Array.from(tempDiv.childNodes);
+    let index = 0;
+    const speed = 100; 
+
+    function typeWriterHTML() {
+      if (index < childNodes.length) {
+
+        const nodeClone = childNodes[index].cloneNode(true);
+        
+        if (nodeClone.nodeType === Node.ELEMENT_NODE) {
+          nodeClone.classList.add("fade-blur-in");
+        } else if (nodeClone.nodeType === Node.TEXT_NODE) {
+
+          const span = document.createElement("span");
+          span.className = "fade-blur-in";
+          span.textContent = nodeClone.textContent;
+          contentContainer.appendChild(span);
+          index++;
+          scrollToBottom();
+          setTimeout(typeWriterHTML, speed);
+          return;
+        }
+
+        contentContainer.appendChild(nodeClone);
+        index++;
+        
+        scrollToBottom();
+        setTimeout(typeWriterHTML, speed);
+      }
+    }
+    
+    typeWriterHTML();
+  } else {
+    contentContainer.innerHTML = htmlFormateado;
+    scrollToBottom();
+  }
 }
 
 async function handleSend() {
@@ -105,16 +146,132 @@ async function handleSend() {
 
   sendBtn.disabled = true;
 
+  const loadingWrap = document.createElement("div");
+  loadingWrap.className = "message-bot loading-container"; // Cambiamos/añadimos clase
+  
+  loadingWrap.innerHTML = `
+    <span class="loading-text">Buscando evidencias</span>
+    <div class="dots-wrapper">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  `;
+  
+  chatArea.appendChild(loadingWrap);
+  scrollToBottom();
+
+  const topKInput = document.getElementById("responseTopK");
+  const topKValue = topKInput ? parseInt(topKInput.value, 10) : 5;
+
+  const modeToggle = document.getElementById("responseMode");
+  const modeValue = (modeToggle && modeToggle.checked) ? "explanatory" : "strict";
+
+  const yearSelect = document.getElementById("fYear");
+  const docSelect = document.getElementById("fDoc");
+  
+  let explicitWhere = null;
+  const condiciones = {};
+
+  if (yearSelect && yearSelect.value) {
+    condiciones["year"] = yearSelect.value;
+  }
+  if (docSelect && docSelect.value) {
+    condiciones["document_type"] = docSelect.value;
+  }
+
+  
+  if (Object.keys(condiciones).length > 0) {
+    
+    explicitWhere = condiciones; 
+  }
+
   try {
-    appendBotMessage("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+    const url = "http://127.0.0.1:8000/query";
+    const apiKey = "";
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "RAG-API-KEY": apiKey
+      },
+      body: JSON.stringify({
+        question: question,
+        top_k: topKValue,
+        explicit_where: explicitWhere,
+        mode: modeValue
+      })
+    });
+
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Error en el pipeline del servidor.");
+    }
+
+    const resultado = await response.json();
+
+    loadingWrap.classList.add("fade-out");
+
+    setTimeout(() => {
+      loadingWrap.remove();
+      appendBotMessage(resultado.answer, true); 
+
+      if (resultado.evidences && resultado.evidences.length > 0) {
+        renderEvidencesInLeftPanel(resultado.evidences);
+    }
+    }, 300);
+
   } catch (err) {
     console.error(err);
+
+    if (loadingWrap && loadingWrap.parentNode) {
+      loadingWrap.remove();
+    }
+
     appendBotMessage("Ocurrió un error al enviar la consulta.");
+
   } finally {
     sendBtn.disabled = false;
     ta.focus();
   }
 }
+
+function renderEvidencesInLeftPanel(evidences) {
+  const container = document.querySelector(".left-panel .evidence-box");
+  if (!container) return;
+
+  const title = container.querySelector("h2");
+  container.innerHTML = "";
+  if (title) container.appendChild(title);
+
+  evidences.forEach((ev, index) => {
+    const meta = ev.metadata || {};
+    const docId = meta.doc_id || "Documento";
+    const pageNum = meta.page_number ? `Pág. ${meta.page_number}` : "";
+
+    const divEvidence = document.createElement("div");
+    divEvidence.className = "evidences evidence-cascade";
+    
+    divEvidence.style.animationDelay = `${index * 150}ms`;
+
+    divEvidence.innerHTML = `
+      <article class="work-card">
+          <div class="work-meta">
+              <div class="work-left">
+                  <div class="work-text">
+                      <div class="work-title">Evidencia #${index + 1}</div>
+                      <div class="work-subtitle">${docId} - ${pageNum}</div>
+                  </div>
+              </div>
+          </div>
+      </article>
+    `;
+    container.appendChild(divEvidence);
+  });
+}
+
 
 /* Eventos */
 ta.addEventListener("keydown", (e) => {

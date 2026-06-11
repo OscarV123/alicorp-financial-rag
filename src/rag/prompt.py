@@ -49,8 +49,8 @@ SYSTEM_RULES_STRICT_ADDON = """\
 SYSTEM_RULES_EXPLANATORY_ADDON = """\
 6. ESTILO DE RESPUESTA EXPLICATIVA:
 - Entrega descriptiva y didáctica, orientada a facilitar la comprensión de las notas o dinámicas de los estados financieros.
-- Uso de introducciones breves y descriptivas para contextualizar la información de la evidencia sin alterar su significado original.
-- Tono: Informativo, accesible y profesional.
+- Uso de introducciones muy breves para contextualizar la información de la evidencia sin alterar su significado original.
+- Tono: Informativo, objetivo y profesional.
 """
 
 USER_TEMPLATE = """\

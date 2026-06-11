@@ -115,6 +115,83 @@ body.theme-dark .descriptive-title {
   transform: translateY(-50%) scale(0.96);
 }
 
+
+/* Contenedor de la burbuja de carga */
+.loading-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: fit-content;
+}
+
+.loading-text {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Contenedor de los 3 puntos */
+.dots-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Estilo base para cada puntito */
+.dots-wrapper span {
+  width: 6px;
+  height: 6px;
+  background-color: currentColor; /* Usa el color de texto actual del bot */
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.3;
+  /* Animación: nombre, duración, tipo de progreso, repetición infinita */
+  animation: blinkDots 1.4s infinite ease-in-out both;
+}
+
+/* Desfase de tiempo para que titilen en secuencia (efecto ola) */
+.dots-wrapper span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.dots-wrapper span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+/* La magia de la animación (opacidad) */
+@keyframes blinkDots {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* Animación para el texto de la IA (Efecto máquina de escribir + Antidifuminado) */
+.fade-blur-in {
+  animation: blurIn 0.4s ease-out forwards;
+}
+
+@keyframes blurIn {
+  from {
+      filter: blur(4px);
+      opacity: 0.3;
+  }
+  to {
+      filter: blur(0);
+      opacity: 1;
+  }
+}
+
+/* Clase para desvanecer suavemente el contenedor de carga */
+.loading-container.fade-out {
+  opacity: 0;
+  filter: blur(2px);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
 /* =========================
    CHAT AREA
    (Reserva espacio para header fijo)
@@ -184,6 +261,26 @@ body.theme-dark .descriptive-title {
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 12.5px;
+}
+
+.msg-text-container p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+  color: inherit;
+}
+
+.msg-text-container strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.msg-text-container ul {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.msg-text-container li {
+  margin-bottom: 4px;
 }
 
 /* =========================
@@ -288,14 +385,10 @@ body.theme-dark .descriptive-title {
    PANELS (Desktop por defecto)
 ========================= */
 .side-panel{
-  /* asume que ya tienes widths, etc. en tu layout */
-  /* importante: que no queden por encima del header fixed */
-  padding-top: 80px; /* ajusta si tu header es más alto */
+  padding-top: 80px;
 }
 
-/* Por defecto los botones pueden estar visibles siempre,
-   pero en desktop normalmente no los necesitas */
 .hamburger{
-  z-index: 1300; /* por encima del header/panel */
+  z-index: 1300;
 }
 
