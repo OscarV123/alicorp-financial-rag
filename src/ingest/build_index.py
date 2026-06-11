@@ -1,17 +1,10 @@
-# ==============================================================================l
-# Indexación (chunks -> embeddings -> vector store).                            |
-#                                                                               |
-# Responsabilidad:                                                              |
-# - Tomar los chunks ya preparados y construir/actualizar la base vectorial.    |
-# - Persistir embeddings + metadata en vector_store para consultas posteriores. |
-# - Ejecutarse como proceso de ingesta (offline/batch), no en cada pregunta.    |
-#                                                                               |
-# No hace:                                                                      |
-# - No responde preguntas.                                                      |    
-# - No invoca el LLM para generar respuestas.                                   |
-# ==============================================================================|
+# ==============================================================================
+# Indexación (chunks -> embeddings -> vector store).                           |
+# ==============================================================================
 import os
 import json
+import re
+import ast
 from pathlib import Path
 from typing import List, Dict, Any, Iterator, Set
 import chromadb
@@ -20,35 +13,52 @@ from openai import OpenAI
 from src.config import CHROMA_PATH, EMBED_MODEL
 
 def iter_chunks_from_file(chunks_file_path: Path) -> Iterator[Dict[str, Any]]:
+    """
+    Lee los archivos de verificación con separadores '===' y reconstruye
+    los diccionarios necesarios para ChromaDB usando expresiones regulares.
+    """
     if not chunks_file_path.exists():
         raise FileNotFoundError(f"El archivo {chunks_file_path} no existe.")
     
     with chunks_file_path.open("r", encoding="utf-8") as f:
-        for line_no, line in enumerate(f, start=1):
-            line = line.strip()
-
-            if not line:
-                continue
-
-            try:
-                chunk_record = json.loads(line)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Error al parsear JSON en la línea {line_no} del archivo {chunks_file_path}: {e}") from e
-        
-            if "chunk_id" not in chunk_record or "chunk_text" not in chunk_record:
-                raise ValueError(f"El registro en la línea {line_no} del archivo {chunks_file_path} carece de 'chunk_id' o 'chunk_text'.")
+        full_text = f.read()
+    
+    chunk_pattern = re.compile(
+        r"={70}\nCHUNK (\d+)\nMetadata: (\{.*?\})\n={70}\n(.*?)(?=\n={70}\nCHUNK \d+|\Z)", 
+        re.DOTALL
+    )
+    
+    matches = chunk_pattern.findall(full_text)
+    
+    for chunk_num, meta_str, content_str in matches:
+        try:
+            metadata = ast.literal_eval(meta_str.strip())
+            chunk_text = content_str.strip()
             
+            doc_id = metadata.get("doc_id", "documento")
+            chunk_id = f"{doc_id}_chunk_{chunk_num}"
+            
+            chunk_record = {
+                "chunk_id": chunk_id,
+                "chunk_text": chunk_text
+            }
+            
+            for k, v in metadata.items():
+                chunk_record[k] = v
+                
             yield chunk_record
+
+        except Exception as e:
+            print(f"Error al parsear el bloque del CHUNK {chunk_num} en {chunks_file_path.name}: {e}")
+            continue
 
 def batch_iter(chunks_generator: Iterator[Dict[str, Any]], batch_size: int) -> Iterator[List[Dict[str, Any]]]:
     batch: List[Dict[str, Any]] = []
     for item in chunks_generator:
         batch.append(item)
-        
         if len(batch) >= batch_size:
             yield batch
             batch = []
-        
     if batch:
         yield batch
 
@@ -70,6 +80,35 @@ def get_clients() -> tuple[OpenAI, chromadb.api.Collection]:
     
     return oai, collection
 
+def clear_entire_collection():
+    """
+    ELIMINACIÓN TOTAL DE SEGURIDAD:
+    Borra la colección completa de Chroma para forzar una ingesta limpia desde cero.
+    """
+    if not os.getenv("OPENAI_API_KEY"):
+        raise ValueError("La variable de entorno OPENAI_API_KEY no fue encontrada.")
+        
+    chroma = chromadb.PersistentClient(
+        path=str(CHROMA_PATH),
+        settings=Settings(anonymized_telemetry=False)
+    )
+    try:
+        chroma.delete_collection(name="rag_finanzas")
+        print("⚠️ Colección 'rag_finanzas' eliminada por completo de ChromaDB.")
+    except Exception as e:
+        print(f"Aviso al intentar borrar colección (puede que no existiera): {e}")
+
+def delete_document_from_index(collection: chromadb.api.Collection, doc_id: str):
+    """
+    ELIMINACIÓN SELECTIVA:
+    Permite limpiar los chunks de un solo documento específico usando su doc_id.
+    """
+    try:
+        collection.delete(where={"doc_id": doc_id})
+        print(f"-> Eliminados del índice vectorial todos los chunks previos de: {doc_id}")
+    except Exception as e:
+        print(f"Error al limpiar selectivamente el documento {doc_id}: {e}")
+
 def filter_existing_chunk_ids(collection: chromadb.api.Collection, chunk_ids: List[str]) -> Set[str]:
     if collection.count() == 0:
         return set()
@@ -80,7 +119,6 @@ def filter_existing_chunk_ids(collection: chromadb.api.Collection, chunk_ids: Li
     for i in range(0, len(chunk_ids), step):
         batch_ids = chunk_ids[i:i+step]
         results = collection.get(ids=batch_ids, include=[])
-        
         ids_found = results.get("ids", []) if results else []
 
         for _id in ids_found:
@@ -95,10 +133,18 @@ def embed_texts(oai: OpenAI, texts: List[str]) -> List[List[float]]:
     resp = oai.embeddings.create(model=EMBED_MODEL, input=texts)
     return [d.embedding for d in resp.data]
 
-def index_batch(collection: chromadb.api.Collection, oai: OpenAI, batch: List[Dict[str, Any]]) -> int:
+def index_batch(collection: chromadb.api.Collection, oai: OpenAI, batch: List[Dict[str, Any]], force_update: bool = True) -> int:
+    """
+    Indexa un lote de chunks. 
+    Si force_update es True, utiliza collection.upsert para sobreescribir los metadatos viejos.
+    """
     ids = [c["chunk_id"] for c in batch]
-    existing = filter_existing_chunk_ids(collection, ids)
-    new = [c for c in batch if c["chunk_id"] not in existing]
+    
+    if not force_update:
+        existing = filter_existing_chunk_ids(collection, ids)
+        new = [c for c in batch if c["chunk_id"] not in existing]
+    else:
+        new = batch
     
     if not new:
         return 0
@@ -109,19 +155,29 @@ def index_batch(collection: chromadb.api.Collection, oai: OpenAI, batch: List[Di
 
     for c in new:
         new_ids.append(c["chunk_id"])
+        
         m = dict(c)
         m.pop("chunk_text", None)
-        metadatas.append(m)
+        m.pop("chunk_id", None) 
+        
+        metadata_limpia = {k: v for k, v in m.items() if v is not None}
+        metadatas.append(metadata_limpia)
     
     vectors = embed_texts(oai, documents)
 
-    collection.add(
-        ids=new_ids,
-        documents=documents,
-        embeddings=vectors,
-        metadatas=metadatas
-    )
+    if force_update:
+        collection.upsert(
+            ids=new_ids,
+            documents=documents,
+            embeddings=vectors,
+            metadatas=metadatas
+        )
+    else:
+        collection.add(
+            ids=new_ids,
+            documents=documents,
+            embeddings=vectors,
+            metadatas=metadatas
+        )
 
     return len(new_ids)
-
-

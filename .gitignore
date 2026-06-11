@@ -1,6 +1,6 @@
 # Project
 vector_store/
-data/raw/*/*.pdf
+data/
 
 
 # Python
