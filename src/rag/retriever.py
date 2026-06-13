@@ -2,41 +2,39 @@
 # Retriever (pregunta -> evidencia relevante).                                       |
 # ====================================================================================
 from dataclasses import dataclass
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from openai import OpenAI
 import chromadb
 from sentence_transformers import CrossEncoder
 import src.config as config
 import src.ingest.build_index as build_index
 import src.rag.retriever_utils as retriever_utils
-
-reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
-
-def rerank_results(question: str, docs: List[Dict[str, Any]], top_k=5):
-    pairs = [(question, doc['chunk_text']) for doc in docs]
-    
-    scores = reranker.predict(pairs)
-    
-    # Asignar scores y ordenar
-    for i, doc in enumerate(docs):
-        doc['relevance_score'] = scores[i]
-        
-    return sorted(docs, key=lambda x: x['relevance_score'], reverse=True)[:top_k]
-
+ 
 @dataclass
 class Evidence:
     chunk_id: str
     text: str
     metadata: Dict[str, Any]
     distance: float
+ 
+reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+
+def rerank_results(question: str, docs: List[Dict[str, Any]], top_k: int):
+    pairs = [(question, doc['chunk_text']) for doc in docs]
+    scores = reranker.predict(pairs)
+    for i, doc in enumerate(docs):
+        doc['score'] = float(scores[i]) 
+    
+    sorted_docs = sorted(docs, key=lambda x: x['score'], reverse=True)
+    return sorted_docs[:top_k]
 
 def embed_query(oai: OpenAI, question: str) -> List[float]:
     return build_index.embed_texts(oai, [question])[0]
-
+ 
 def normalize_where(where: Dict[str, Any]) -> Dict[str, Any]:
     if not where:
         return {}
-
+ 
     if any(k.startswith("$") for k in where.keys()):
         return where
     
@@ -45,7 +43,7 @@ def normalize_where(where: Dict[str, Any]) -> Dict[str, Any]:
         return items[0]
     
     return {"$and": items}
-
+ 
 def query_collection(collection: chromadb.api.Collection,
                      query_vector: List[float],
                      top_k: int,
@@ -61,17 +59,17 @@ def query_collection(collection: chromadb.api.Collection,
         cleaned_where = normalize_where(where)
         if cleaned_where:
             kwargs["where"] = cleaned_where
-
-    return collection.query(**kwargs)    
+ 
+    return collection.query(**kwargs)      
 
 def get_evidence(result) -> List[Evidence]:
     ids = result.get("ids", [[]])[0] or []
     docs = result.get("documents", [[]])[0] or []
     metas = result.get("metadatas", [[]])[0] or []
     dists = result.get("distances", [[]])[0] or []
-
+ 
     evidences: List[Evidence] = []
-
+ 
     for chunk_id, doc, meta, dist in zip(ids, docs, metas, dists):
         evidences.append(
             Evidence(
@@ -87,58 +85,61 @@ def retrieve(question: str,
              top_k: int = config.TOP_K, 
              explicit_where: Optional[Dict[str, Any]] = None,
              return_debug: bool = True):
-
+ 
     oai, collection = build_index.get_clients()
     query_vector = embed_query(oai, question)
-
+ 
     match_r = retriever_utils.detect_signals(question)
     match_r = retriever_utils.merge_where(match_r, explicit_where)
-    effective_where = match_r.where
-
-    match_r.debug["retrieval_stages"] = []
-    evidences = []
-
-    chain = retriever_utils.relaxation_chain(effective_where)
-    
-    for stage_idx, relaxed_where in enumerate(chain):
-        result = query_collection(collection, query_vector, top_k * 2, relaxed_where)
-        current_evidences = get_evidence(result)
-        
-        match_r.debug["retrieval_stages"].append({
-            "stage": f"relaxation_chain_{stage_idx}",
-            "where": relaxed_where,
-            "results_count": len(current_evidences)
-        })
-        
-        if current_evidences:
-            evidences = current_evidences
-            break
-
-    if not evidences:
-        resguardo_where = None
-        if match_r.key in ["financial_statements", "financial_statements_fallback"]:
-            resguardo_where = {"doc_type": {"$in": ["eeff_separados", "eeff_consolidados"]}}
-            
-        result = query_collection(collection, query_vector, top_k * 2, resguardo_where)
+ 
+    stages: List[Tuple[str, Optional[Dict[str, Any]], int]] = []
+    evidences: List[Evidence] = []
+    last_where: Optional[Dict[str, Any]] = None
+ 
+    multi_where = retriever_utils.build_multi_where(match_r)
+    if multi_where is not None:
+        primary_chain = retriever_utils.relaxation_chain(multi_where)
+        stage_label = "multi_intent_where"
+    else:
+        primary_chain = retriever_utils.relaxation_chain(match_r.where)
+        stage_label = "signal_where"
+ 
+    for where_candidate in primary_chain:
+        result = query_collection(collection, query_vector, top_k, where_candidate)
         evidences = get_evidence(result)
-        
-        match_r.debug["retrieval_stages"].append({
-            "stage": "final_fallback",
-            "where": resguardo_where,
-            "results_count": len(evidences)
-        })
-
+        stages.append((stage_label, where_candidate, len(evidences)))
+        last_where = where_candidate
+        if evidences:
+            break
+ 
+    if not evidences:
+        fallback_keys = match_r.debug.get("multi_intent_keys") or [match_r.key]
+        fallback_types = retriever_utils.doc_types_for_keys(fallback_keys)
+        resguardo_where = {"doc_type": {"$in": fallback_types}} if fallback_types else None
+ 
+        if resguardo_where is not None and resguardo_where != last_where:
+            result = query_collection(collection, query_vector, top_k, resguardo_where)
+            evidences = get_evidence(result)
+            stages.append(("fallback_doc_type", resguardo_where, len(evidences)))
+ 
+        if not evidences and resguardo_where is not None:
+            result = query_collection(collection, query_vector, top_k, None)
+            evidences = get_evidence(result)
+            stages.append(("fallback_unfiltered", None, len(evidences)))
+ 
+    match_r.debug["retrieval_stages"] = stages
+    
     if evidences:
         docs_to_rerank = [{"chunk_text": ev.text, "evidence_obj": ev} for ev in evidences]
+        reranked = rerank_results(question, docs_to_rerank, top_k)
         
-        reranked_docs = rerank_results(question, docs_to_rerank, top_k=top_k)
+        evidences = [d["evidence_obj"] for d in reranked]
         
-        evidences = [d["evidence_obj"] for d in reranked_docs]
-        
-        match_r.debug["reranked_scores"] = [d["relevance_score"] for d in reranked_docs]
+        match_r.debug["reranked_scores"] = [d["score"] for d in reranked]
 
     if return_debug:
-        print(f"Reranked top score: {match_r.debug['reranked_scores'][0]}")
+        if "reranked_scores" in match_r.debug:
+            print(f"Reranked top score: {match_r.debug['reranked_scores'][0]}")
         return evidences, match_r
 
     return evidences
