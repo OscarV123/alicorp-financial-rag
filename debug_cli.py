@@ -19,7 +19,7 @@ import app as api_endpoints
 #    
 #    oai, collection = build_index.get_clients()
 #    
-#    directorio_txt = Path("data/output_chunks") 
+#    directorio_txt = Path("data/processed") 
 #    
 #    if not directorio_txt.exists():
 #        print(f"Error: No se encuentra el directorio {directorio_txt}. "
@@ -165,7 +165,7 @@ import app as api_endpoints
 #================================================================ 
 #
 #sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-#
+
 print("================================================================")
 print("SISTEMA EXPERTO RAG - ALICORP FINANCIAL QA INTERACTIVE CLI")
 print("================================================================")

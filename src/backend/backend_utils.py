@@ -7,8 +7,6 @@ from src.config import DAILY_LIMIT, PER_MINUTE_LIMIT, WINDOW_DAY, WINDOW_MIN
 rag_api_key_header = APIKeyHeader(name="RAG-API-KEY", auto_error=False)
 RAG_API_KEY_HASH = os.getenv("RAG_API_KEY_HASH", "")
 
-print(f"RAG_API_KEY_HASH: {RAG_API_KEY_HASH}")
-
 def require_api_key(api_key: str = Depends(rag_api_key_header)) -> None:
     if not RAG_API_KEY_HASH:
         raise HTTPException(status_code=500, detail="API key hash not configured")

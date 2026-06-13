@@ -38,6 +38,19 @@ def iter_chunks_from_file(chunks_file_path: Path) -> Iterator[Dict[str, Any]]:
             doc_id = metadata.get("doc_id", "documento")
             chunk_id = f"{doc_id}_chunk_{chunk_num}"
             
+            doc_id_lower = doc_id.lower()
+            
+            if "separados" in doc_id_lower:
+                metadata["doc_type"] = "eeff_separados"
+            elif "consolidados" in doc_id_lower:
+                metadata["doc_type"] = "eeff_consolidados"
+            elif "reportenoauditado" in doc_id_lower or "earnings" in doc_id_lower:
+                metadata["doc_type"] = "earnings_reports"
+            elif "hechosdeimportancia" in doc_id_lower:
+                metadata["doc_type"] = "important_facts"
+            else:
+                metadata["doc_type"] = "default"
+            
             chunk_record = {
                 "chunk_id": chunk_id,
                 "chunk_text": chunk_text

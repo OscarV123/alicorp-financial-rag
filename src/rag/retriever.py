@@ -5,10 +5,23 @@ from dataclasses import dataclass
 from typing import Dict, List, Any, Optional
 from openai import OpenAI
 import chromadb
-
+from sentence_transformers import CrossEncoder
 import src.config as config
 import src.ingest.build_index as build_index
 import src.rag.retriever_utils as retriever_utils
+
+reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+
+def rerank_results(question: str, docs: List[Dict[str, Any]], top_k=5):
+    pairs = [(question, doc['chunk_text']) for doc in docs]
+    
+    scores = reranker.predict(pairs)
+    
+    # Asignar scores y ordenar
+    for i, doc in enumerate(docs):
+        doc['relevance_score'] = scores[i]
+        
+    return sorted(docs, key=lambda x: x['relevance_score'], reverse=True)[:top_k]
 
 @dataclass
 class Evidence:
@@ -82,37 +95,50 @@ def retrieve(question: str,
     match_r = retriever_utils.merge_where(match_r, explicit_where)
     effective_where = match_r.where
 
-    result = query_collection(collection, query_vector, top_k, effective_where)
-    evidences = get_evidence(result)
+    match_r.debug["retrieval_stages"] = []
+    evidences = []
 
-    if not evidences and effective_where:
-        if "period" in effective_where:
-            relaxed = dict(effective_where)
-            relaxed.pop("period", None)
-            result = query_collection(collection, query_vector, top_k, relaxed)
-            evidences = get_evidence(result)
-            if not evidences:
-                effective_where = relaxed
-
-        if not evidences and "year" in effective_where:
-            relaxed = dict(effective_where)
-            relaxed.pop("year", None)
-            result = query_collection(collection, query_vector, top_k, relaxed)
-            evidences = get_evidence(result)
+    chain = retriever_utils.relaxation_chain(effective_where)
+    
+    for stage_idx, relaxed_where in enumerate(chain):
+        result = query_collection(collection, query_vector, top_k * 2, relaxed_where)
+        current_evidences = get_evidence(result)
+        
+        match_r.debug["retrieval_stages"].append({
+            "stage": f"relaxation_chain_{stage_idx}",
+            "where": relaxed_where,
+            "results_count": len(current_evidences)
+        })
+        
+        if current_evidences:
+            evidences = current_evidences
+            break
 
     if not evidences:
-        question_lower = question.lower()
-        palabras_financieras = ["informe", "eeff", "separado", "consolidado", "balance", "capital", "nota", "patrimonio"]
-        
-        if any(w in question_lower for w in palabras_financieras):
-            resguardo_where = {"doc_type": {"$ne": "hechosdeimportancia_convocatoriaajuntadeaccionistas_febrero-2023"}}
-        else:
-            resguardo_where = None
+        resguardo_where = None
+        if match_r.key in ["financial_statements", "financial_statements_fallback"]:
+            resguardo_where = {"doc_type": {"$in": ["eeff_separados", "eeff_consolidados"]}}
             
-        result = query_collection(collection, query_vector, top_k, resguardo_where)
+        result = query_collection(collection, query_vector, top_k * 2, resguardo_where)
         evidences = get_evidence(result)
+        
+        match_r.debug["retrieval_stages"].append({
+            "stage": "final_fallback",
+            "where": resguardo_where,
+            "results_count": len(evidences)
+        })
+
+    if evidences:
+        docs_to_rerank = [{"chunk_text": ev.text, "evidence_obj": ev} for ev in evidences]
+        
+        reranked_docs = rerank_results(question, docs_to_rerank, top_k=top_k)
+        
+        evidences = [d["evidence_obj"] for d in reranked_docs]
+        
+        match_r.debug["reranked_scores"] = [d["relevance_score"] for d in reranked_docs]
 
     if return_debug:
+        print(f"Reranked top score: {match_r.debug['reranked_scores'][0]}")
         return evidences, match_r
 
     return evidences

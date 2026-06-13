@@ -43,6 +43,19 @@ SIGNALS_DICT: Dict[str, Dict[str, Any]] = {
     }
 }
 
+DOC_TYPE_GROUPS: Dict[str, List[str]] = {
+    "earnings_reports": ["earnings_reports"],
+    "important_facts": ["important_facts"],
+    "financial_statements": ["eeff_separados", "eeff_consolidados"],
+    "financial_statements_fallback": ["eeff_separados", "eeff_consolidados"],
+    "default": [],
+}
+ 
+def doc_types_for(key: str) -> List[str]:
+    """Devuelve la lista de doc_type permitidos para una key de señal dada.
+    Lista vacia => sin restriccion de doc_type (busqueda abierta)."""
+    return DOC_TYPE_GROUPS.get(key, [])
+
 CURRENT_YEAR = datetime.today().year 
 
 MONTHS_ES = {
@@ -68,17 +81,17 @@ def detect_signals(question: str) -> SignalMatch:
     for m, mm in MONTHS_ES.items():
         if re.search(rf"\b{re.escape(m)}\b", question):
             month_detected = mm
-
+ 
     year_match = re.search(r"\b(20\d{2})\b", question)
     year_detected = int(year_match.group(1)) if year_match else None
-
+ 
     period_detected = None
     period_match = re.search(r"\b(20\d{2})-(0[1-9]|1[0-2])\b", question)
     if period_match:
         period_detected = period_match.group(0)
     elif month_detected and year_detected:
         period_detected = f"{year_detected}-{month_detected}"
-
+ 
     audited_intent = any(w in question for w in ["auditado", "auditados", "dictamen", "opinion del auditor", "auditor"])
     consolidado_intent = any(w in question for w in ["consolidado", "consolidados", "consolidada"])
     separado_intent = any(w in question for w in ["separado", "separados", "separada", "individual"])
@@ -89,27 +102,27 @@ def detect_signals(question: str) -> SignalMatch:
     def words_hits_count(text: str, words: set[str]) -> int:
         tokens = set(re.findall(r"\b\w+\b", text))
         return sum(1 for w in words if w in tokens)
-
+ 
     best: Optional[SignalMatch] = None
 
     for key, value in SIGNALS_DICT.items():
         priority = float(value.get("priority", 0))
         ph = phrase_hits(question, value.get("phrase", []))
         ws = words_hits_count(question, value.get("words", set()))
-
+ 
         score = 6.0 * len(ph) + 1.0 * ws + priority
         if len(ph) == 0 and ws == 0:
             continue
 
         where: Dict[str, Any] = dict(value.get("base_where", {}))
-
+ 
         if key == "financial_statements":
             if separado_intent:
                 where["doc_type"] = "eeff_separados"
             elif consolidado_intent:
                 where["doc_type"] = "eeff_consolidados"
             else:
-                where["doc_type"] = {"$ne": "important_facts"}
+                where["doc_type"] = {"$in": DOC_TYPE_GROUPS["financial_statements"]}
 
         if year_detected is not None:
             where["year"] = year_detected
@@ -136,7 +149,7 @@ def detect_signals(question: str) -> SignalMatch:
     if best is None:
         if any(w in question for w in ["capital", "patrimonio", "informe", "monto"]):
             return SignalMatch(key="financial_statements_fallback", score=10.0, 
-                               where={"doc_type": {"$ne": "important_facts"}}, 
+                               where={"doc_type": {"$in": DOC_TYPE_GROUPS["financial_statements_fallback"]}}, 
                                debug={"question_norm": question, "reason": "financial_keywords_detected"})
             
         return SignalMatch(key="default", score=0.0, where={}, debug={"question_norm": question, "reason": "no_signal_matched"})
@@ -149,3 +162,12 @@ def merge_where(match_r: SignalMatch, explicit_where: Optional[Dict[str, Any]]=N
     inferred = dict(match_r.where or {})
     inferred.update(explicit_where)
     return SignalMatch(key=match_r.key, score=match_r.score, where=inferred, debug=match_r.debug)
+ 
+def relaxation_chain(where: Dict[str, Any]) -> List[Dict[str, Any]]:
+    chain = [dict(where or {})]
+    current = dict(where or {})
+    for key_to_drop in ("period", "year", "audited"):
+        if key_to_drop in current:
+            current = {k: v for k, v in current.items() if k != key_to_drop}
+            chain.append(dict(current))
+    return chain
