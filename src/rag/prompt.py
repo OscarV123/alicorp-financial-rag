@@ -86,7 +86,7 @@ def build_context(evidences: List[Any], max_chars_per_chunk: int = 1600) -> str:
             text = text[:max_chars_per_chunk] + "…"
 
         parts.append(
-            f"[Fuente {i}] "
+            f"[Fuente {doc_id}] "
             f"año_actual_del_sistema={CURRENT_YEAR} | doc_id={doc_id} | año_del_documento={year} | tipo={doc_type} | página={page} | chunk_id={chunk_id} | \n"
             f"{text}\n"
             f"----------------------------------------------------------------------"

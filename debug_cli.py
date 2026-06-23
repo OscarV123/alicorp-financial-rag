@@ -6,6 +6,7 @@ import src.config as config
 import src.ingest.build_index as build_index
 import src.rag.qa as qa
 import app as api_endpoints
+import src.ingest.markdown_splitter as mk_splitter
 
 
 # Reingestar BD vectorial desde archivos de texto estructurado (chunks_output_*.txt)
@@ -54,8 +55,6 @@ import app as api_endpoints
 #RAW_DIR = Path(r"C:\Proyectos\alicorp-financial-rag\data\raw")
 #PROCESSED_DIR = Path(r"C:\Proyectos\alicorp-financial-rag\data\processed")
 #
-#TEST_EMPRESA = "Alicorp"
-#
 #archivos_md = list(MARKER_RESULTS_DIR.rglob("*.md"))
 #
 #if not archivos_md:
@@ -77,11 +76,11 @@ import app as api_endpoints
 #    output_txt_path = PROCESSED_DIR / f"chunks_output_{doc_name}.txt"
 #
 #    try:
-#        run(
+#        mk_splitter.run(
 #            md_path=md_path,
 #            pdf_path=pdf_path,
 #            output_txt_path=output_txt_path,
-#            empresa=TEST_EMPRESA
+#            empresa="Alicorp"
 #        )
 #    except Exception as e:
 #        print(f"Error crítico al procesar {doc_name}: {e}")
@@ -166,33 +165,34 @@ import app as api_endpoints
 #
 #sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-print("================================================================")
-print("SISTEMA EXPERTO RAG - ALICORP FINANCIAL QA INTERACTIVE CLI")
-print("================================================================")
-print("Escribe tu consulta financiera o de Hechos de Importancia.")
-print("Escribe 'salir' o 'exit' para cerrar la sesión.\n")
-
-while True:
-    q = input("Pregunta: ").strip()
-    if not q:
-        continue
-    if q.lower() in ("exit", "salir", "quit"):
-        print("Cerrando pipeline de consulta. ¡Hasta luego!")
-        break
-    
-    res = qa.answer_question(
-        question=q,
-        explicit_where=None,    
-        temperature=0.1,
-        mode="strict"
-    )
-
-    print("\n--- RESPUESTA DEL LLM ---")
-    print(res.answer)
-
-    print("\n--- EVIDENCIA DE RESPALDO (Citas) ---")
-    for i, ev in enumerate(res.evidences, start=1):
-        m = ev.metadata
-        print(f"[{i}] Doc ID: {m.get('doc_id')} | Pág: {m.get('page_number')} | Distancia: {ev.distance:.4f}")
-        print(f"    chunk_id = {ev.chunk_id}")
-    print("\n" + "="*80 + "\n")
+#print("================================================================")
+#print("SISTEMA EXPERTO RAG - ALICORP FINANCIAL QA INTERACTIVE CLI")
+#print("================================================================")
+#print("Escribe tu consulta financiera o de Hechos de Importancia.")
+#print("Escribe 'salir' o 'exit' para cerrar la sesión.\n")
+#
+#while True:
+#    q = input("Pregunta: ").strip()
+#    if not q:
+#        continue
+#    if q.lower() in ("exit", "salir", "quit"):
+#        print("Cerrando pipeline de consulta. ¡Hasta luego!")
+#        break
+#    
+#    res = qa.answer_question(
+#        question=q,
+#        explicit_where=None,    
+#        temperature=0.1,
+#        mode="strict"
+#    )
+#
+#    print("\n--- RESPUESTA DEL LLM ---")
+#    print(res.answer)
+#
+#    print("\n--- EVIDENCIA DE RESPALDO (Citas) ---")
+#    for i, ev in enumerate(res.evidences, start=1):
+#        m = ev.metadata
+#        print(f"[{i}] Doc ID: {m.get('doc_id')} | Pág: {m.get('page_number')} | Distancia: {ev.distance:.4f}")
+#        print(f"    chunk_id = {ev.chunk_id}")
+#    print("\n" + "="*80 + "\n")
+#

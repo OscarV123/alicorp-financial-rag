@@ -251,24 +251,25 @@ class _PageIndex:
         return round(p0 + t * (p1 - p0))
 
 
-def _find_clean_pos(chunk_content: str, clean_text: str, search_from: int) -> int:
+def _find_clean_pos_debug(
+    chunk_content: str, clean_text: str, search_from: int
+) -> tuple[int, bool, str]:
+    """Versión debug: devuelve (posición, encontrado, método/needle usado)."""
     for line in chunk_content.splitlines():
         needle = line.strip()
         if len(needle) < 20:
             continue
         pos = clean_text.find(needle[:80], search_from)
         if pos != -1:
-            return pos
+            return pos, True, f"line-match: {needle[:50]!r}"
     snippet = chunk_content.strip()[:80]
     pos = clean_text.find(snippet, search_from)
-    return pos if pos != -1 else search_from
+    if pos != -1:
+        return pos, True, f"snippet-match: {snippet[:50]!r}"
+    return search_from, False, "*** FALLBACK ***"
 
 
 def run(md_path: Path, pdf_path: Path, output_txt_path: Path, empresa: str) -> list:
-    """
-    Ejecuta el pipeline completo para un documento específico de forma dinámica.
-    Calcula de forma exacta las páginas buscando hacia atrás el último marcador de Marker.
-    """
     doc_pdf = fitz.open(pdf_path)
     total_pages = doc_pdf.page_count
     doc_pdf.close()
@@ -276,77 +277,114 @@ def run(md_path: Path, pdf_path: Path, output_txt_path: Path, empresa: str) -> l
     with open(md_path, encoding="utf-8") as f:
         raw_text = f.read()
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"Procesando: {pdf_path.name}")
     print(f"Empresa: {empresa} | Páginas PDF: {total_pages}")
-    print("="*70)
-    
+    print("=" * 70)
+
+    all_markers = _PAGE_MARKER_RE.findall(raw_text)
+
     offset_map = _build_offset_map(raw_text)
     clean_text = _IMAGE_TAG_RE.sub("", raw_text)
 
     doc_meta = _extract_doc_metadata(md_path, PDF_BASE_DIR)
-    doc_meta["source"] = empresa 
+    doc_meta["source"] = empresa
+
+    is_hechos = "hechosdeimportancia" in doc_meta["doc_id"].lower()
 
     anchors_del_documento = obtener_anclas_por_documento(doc_meta["doc_id"])
-    if anchors_del_documento:
-        print(f"-> Se cargaron {len(anchors_del_documento)} anclas manuales para calibración de respaldo.")
-    else:
-        print("-> Sin anclas manuales. Usando marcas de imagen nativas del Markdown.")
+
+    page_index = _PageIndex(raw_text, clean_text, offset_map, anchors_del_documento, total_pages)
 
     splitter = MarkdownHeaderTextSplitter(
-        headers_to_split_on=[
-            ("#",    "seccion"),
-            ("####", "subseccion"),
-        ],
+        headers_to_split_on=[("#", "seccion"), ("####", "subseccion")],
         strip_headers=False,
     )
     raw_chunks = splitter.split_text(clean_text)
 
-    valid_chunks = []
+    valid_chunks  = []
     search_cursor = 0
+    anomalias     = []
 
-    for chunk in raw_chunks:
+    for raw_i, chunk in enumerate(raw_chunks):
         content = chunk.page_content.strip()
         if len(content) < MIN_CHUNK_LENGTH:
             continue
 
-        clean_pos = _find_clean_pos(content, clean_text, search_cursor)
-        search_cursor = max(search_cursor, clean_pos)
+        chunk_num = len(valid_chunks) + 1
+        clean_pos, found, method = _find_clean_pos_debug(content, clean_text, search_cursor)
 
-        raw_pos = offset_map[clean_pos] if clean_pos < len(offset_map) else offset_map[-1]
-        
-        texto_previo = raw_text[:raw_pos]
-        marcardores_encontrados = _PAGE_MARKER_RE.findall(texto_previo)
-        
-        if marcardores_encontrados:
-            page_number = int(marcardores_encontrados[-1]) + 1
-        else:
-            page_number = 1
+        if clean_pos >= search_cursor:
+            search_cursor = clean_pos + len(content)
 
-        for needle, manual_page in anchors_del_documento:
-            if needle in content:
-                page_number = manual_page
-                break
+        safe_clean_pos = min(clean_pos, len(offset_map) - 1)
+        raw_pos = offset_map[safe_clean_pos]
 
+        page_number = page_index.page_at(raw_pos) or 1
         page_number = min(total_pages, page_number)
 
-        chunk.metadata = {
-            **doc_meta,
-            "page_number": page_number,
-            **chunk.metadata,        
-        }
+        anchor_applied = None
+        for needle, manual_page in anchors_del_documento:
+            if needle in content:
+                page_number = min(total_pages, manual_page)
+                anchor_applied = needle[:40]
+                break
+
+        is_anomaly = False
+        reasons    = []
+
+        if page_number == 1 and chunk_num > 1 and not anchor_applied:
+            is_anomaly = True
+            if not all_markers and not anchors_del_documento:
+                reasons.append("sin marcadores ni anclas manuales")
+            elif not all_markers:
+                reasons.append("sin marcadores — interpolando solo desde anclas manuales")
+            elif not found:
+                reasons.append("FALLBACK: texto no hallado en clean_text")
+            else:
+                reasons.append("chunk antes del primer ancla conocida")
+
+        if not found:
+            is_anomaly = True
+            reasons.append(f"FALLBACK activo (cursor={search_cursor})")
+
+        if is_anomaly:
+            anomalias.append({
+                "chunk_num": chunk_num,
+                "raw_i":     raw_i,
+                "seccion":   chunk.metadata.get("seccion", "")[:60],
+                "preview":   content[:80].replace("\n", " "),
+                "clean_pos": clean_pos,
+                "raw_pos":   raw_pos,
+                "page_num":  page_number,
+                "reasons":   reasons,
+                "method":    method,
+            })
+
+        chunk.metadata     = {**doc_meta, "page_number": page_number, **chunk.metadata}
         chunk.page_content = content
         valid_chunks.append(chunk)
 
-    output_txt_path.parent.mkdir(parents=True, exist_ok=True)
+    paginas_1 = sum(1 for c in valid_chunks if c.metadata["page_number"] == 1)
+    print(f"[RES] Chunks válidos: {len(valid_chunks)} | page=1: {paginas_1} | anomalías: {len(anomalias)}")
 
+    if is_hechos and anomalias:
+        print(f"\n{'─'*70}")
+        print(f"ANOMALÍAS DETECTADAS ({len(anomalias)}):")
+        print(f"{'─'*70}")
+        for a in anomalias:
+            print(f"\n  Chunk {a['chunk_num']:>4} (raw #{a['raw_i']}) → page={a['page_num']}")
+            print(f"  Sección : {a['seccion']!r}")
+            print(f"  Preview : {a['preview']!r}")
+            print(f"  Causas  : {' | '.join(a['reasons'])}")
+            print(f"  Detalle : clean_pos={a['clean_pos']} raw_pos={a['raw_pos']:,} método={a['method']}")
+    elif is_hechos:
+        print("[OK] Sin anomalías detectadas.")
+
+    output_txt_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_txt_path, "w", encoding="utf-8") as out:
         out.write(f"Total chunks válidos: {len(valid_chunks)}\n\n")
-
         for i, chunk in enumerate(valid_chunks):
-            m       = chunk.metadata
-            preview = chunk.page_content[:150].replace("\n", " ")
-
             out.write(f"{'=' * 70}\n")
             out.write(f"CHUNK {i + 1}\n")
             out.write(f"Metadata: {chunk.metadata}\n")
@@ -354,9 +392,8 @@ def run(md_path: Path, pdf_path: Path, output_txt_path: Path, empresa: str) -> l
             out.write(chunk.page_content)
             out.write("\n\n")
 
-    print(f"Chunks originales : {len(raw_chunks)}")
+    print(f"\nChunks originales : {len(raw_chunks)}")
     print(f"Chunks válidos    : {len(valid_chunks)}")
     print(f"Exportado txt a   : {output_txt_path}")
-    
-    return valid_chunks
 
+    return valid_chunks
