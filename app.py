@@ -1,10 +1,13 @@
 from fastapi import FastAPI, HTTPException, status, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import src.rag.qa as qa
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, Literal, Annotated
 from src.ingest.build_index import get_clients
 from src.backend.backend_utils import require_api_key, rate_limit
+import src.config as configev
 import os
 import re
 
@@ -50,7 +53,23 @@ async def query_endpoint(req: QueryRequest, request: Request) -> qa.QAResult:
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="An error occurred while processing the request")
-        
+
+
+@app.get("/abrir-pdf/{filename}")
+async def get_pdf(filename: str):
+    for root, _, files in os.walk(configev.PDFS_PATH):
+        if filename in files:
+            file_path = os.path.join(root, filename)
+
+            return FileResponse(file_path, media_type="application/pdf")
+
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"PDF file not found: {filename}")
+
+
+
+
+
+
 @app.get("/health")
 async def health_check() -> Dict[str, str]:
     return {"status": "ok"}

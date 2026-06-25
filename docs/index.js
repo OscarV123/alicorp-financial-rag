@@ -83,7 +83,9 @@ function appendBotMessage(text, isStreaming = false) {
   chatArea.appendChild(wrap);
   scrollToBottom();
 
-  const htmlFormateado = marked.parse(text, { breaks: true });
+  const textoConEnlaces = convertQuotesToLinks(text);
+
+  const htmlFormateado = marked.parse(textoConEnlaces, { breaks: true });
 
   if (isStreaming) {
     const tempDiv = document.createElement("div");
@@ -147,7 +149,7 @@ async function handleSend() {
   sendBtn.disabled = true;
 
   const loadingWrap = document.createElement("div");
-  loadingWrap.className = "message-bot loading-container"; // Cambiamos/añadimos clase
+  loadingWrap.className = "message-bot loading-container";
   
   loadingWrap.innerHTML = `
     <span class="loading-text">Buscando evidencias</span>
@@ -249,13 +251,15 @@ function renderEvidencesInLeftPanel(evidences) {
   evidences.forEach((ev, index) => {
     const meta = ev.metadata || {};
     const docId = meta.doc_id || "Documento";
-    const pageNum = meta.page_number ? `Pág. ${meta.page_number}` : "";
+    const pageNum = meta.page_number || 1; 
+    const pageNumText = meta.page_number ? `Pág. ${meta.page_number}` : "";
 
     const divEvidence = document.createElement("div");
     divEvidence.className = "evidences evidence-cascade";
-    
     divEvidence.style.animationDelay = `${index * 150}ms`;
-
+    
+    divEvidence.style.cursor = "pointer";
+    
     divEvidence.innerHTML = `
       <article class="work-card">
           <div class="work-meta">
@@ -268,9 +272,27 @@ function renderEvidencesInLeftPanel(evidences) {
           </div>
       </article>
     `;
+
+    divEvidence.addEventListener("click", () => {
+      const urlPdf = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf#page=${pageNum}`;
+      window.open(urlPdf, '_blank');
+    });
+
     container.appendChild(divEvidence);
   });
 }
+
+function convertQuotesToLinks(texto) {
+  const regex = /([\w-]+),\s*Pág\.\s*(\d+)/g;
+
+  return texto.replace(regex, (match, docId, pageNum) => {
+    const url = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf#page=${pageNum}`;
+
+    return `<a href="${url}" target="_blank" class="pdf-inline-link">${docId}, Pág. ${pageNum}</a>`;
+  });
+}
+
+
 
 
 /* Eventos */
