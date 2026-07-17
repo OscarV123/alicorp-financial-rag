@@ -172,3 +172,16 @@ body.theme-dark {
     opacity: 0.9;
 }
 
+.pdf-inline-link {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.pdf-inline-link:visited {
+    color: var(--accent);
+}
+
+.pdf-inline-link:hover {
+    color: var(--accent);
+    opacity: 0.8;
+}

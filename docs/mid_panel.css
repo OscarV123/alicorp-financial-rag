@@ -249,7 +249,7 @@ body.theme-dark .descriptive-title {
 }
 
 .message-bot .msg-text {
-  color: var(--text-secondary);
+  color: var(--text);
   font-size: 14px;
   line-height: 1.7;
   letter-spacing: 0.005em;
@@ -316,6 +316,64 @@ body.theme-dark .descriptive-title {
 .msg-text-container li {
   margin-bottom: 4px;
 }
+
+
+/* =========================
+   SUGGESTED QUESTIONS (CHIPS)
+========================= */
+
+.suggested-questions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 90px;
+    max-width: 934px;
+    padding: 16px 18px 14px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    z-index: 500;
+    pointer-events: none;
+}
+
+.suggestion-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-align: left;
+    width: fit-content;
+    max-width: 100%;
+    box-shadow: var(--shadow-sm);
+    pointer-events: auto;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.suggestion-chip:hover {
+    background: var(--accent-surface);
+    border-color: var(--accent-border);
+    color: var(--accent);
+}
+
+.chip-arrow {
+    flex-shrink: 0;
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.suggestion-chip:hover .chip-arrow {
+    opacity: 1;
+}
+
 
 /* =========================
    COMPOSER

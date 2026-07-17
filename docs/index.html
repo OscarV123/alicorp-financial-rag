@@ -46,6 +46,9 @@
             </div>
 
         </main>
+
+        <div class="suggested-questions" id="suggested-questions"></div>
+
         <div class="composer">
             <div class="composer-inner">
                 <textarea
@@ -207,7 +210,7 @@
                 Este chatbot ofrece información basada en documentos financieros <b>públicos</b> de Alicorp mediante IA.
                 Las respuestas pueden contener errores o imprecisiones.
                 Detalles a tomar en cuenta:<br><br>
-                1. Las citas pueden tener imprecisiones (+-3 páginas); recomiendo verificarlas con los documentos originales.<br>
+                1. Las citas pueden tener imprecisiones (máximo +-3 páginas); recomiendo verificarlas con los documentos originales.<br>
                 2. Solo se han indexado los siguientes documentos:
                 <a href="#" id="toggle-docs" style="color:var(--accent); text-decoration:underline; cursor:pointer;">Ver más</a>
                 <span id="docs-list" hidden style="font-size: 12px;"><br>
@@ -271,6 +274,8 @@
                 toggleBtn.textContent = isHidden ? "Ver menos" : "Ver más";
             });
 
+            //==========================
+
             const backdrop = document.getElementById("disclaimer-backdrop");
             const acceptBtn = document.getElementById("disclaimer-accept");
 
@@ -317,7 +322,80 @@
                 input.value = current + 1;
                 }
             });
+            
+            //==========================
 
+            const suggestedContainer = document.getElementById("suggested-questions");
+            if (!suggestedContainer) return;
+
+            const preguntasSugeridas = [
+                "Según el reporte de resultados del cuarto trimestre de 2024, ¿qué volumen total vendió Alicorp?",
+                "Según el reporte de resultados del cuarto trimestre de 2024, ¿cuál fue el margen EBITDA ajustado consolidado de Alicorp?",
+                "¿Cuál fue el EBITDA ajustado consolidado de Alicorp en el cuarto trimestre de 2024?",
+                "Según los estados financieros separados, ¿cuál fue la utilidad neta de Alicorp durante 2022?",
+                "Según los estados financieros separados, ¿cuánto ascendió el efectivo y equivalente de efectivo al 31 de diciembre de 2022?",
+                "Según los estados financieros consolidados, ¿cuál fue la utilidad bruta de Alicorp?",
+                "Según el estado consolidado de resultados publicado en febrero de 2024, ¿cuál fue el total de ventas netas de Alicorp y subsidiarias durante 2023?",
+                "¿Qué monto colocó Alicorp en su emisión de bonos corporativos informada en diciembre de 2023?",
+                "En diciembre de 2022, ¿cuántas acciones comunes había adquirido Alicorp al alcanzar el límite autorizado de recompra?",
+                "Según el hecho de importancia de septiembre de 2024, ¿qué porcentaje de las acciones comunes emitidas representaban las acciones recompradas acumuladas por Alicorp?"
+            ];
+
+            function getRandomQuestions(n = 2) {
+                const shuffled = [...preguntasSugeridas].sort(() => Math.random() - 0.5);
+                return shuffled.slice(0, n);
+            }
+
+            function renderSuggestions() {
+                suggestedContainer.innerHTML = "";
+
+                getRandomQuestions(2).forEach(question => {
+                const chip = document.createElement("button");
+                chip.className = "suggestion-chip";
+                chip.dataset.question = question;
+
+                const arrow = document.createElement("span");
+                arrow.className = "chip-arrow";
+                arrow.textContent = "⤷";
+
+                const text = document.createElement("span");
+                text.textContent = question;
+
+                chip.appendChild(arrow);
+                chip.appendChild(text);
+
+                chip.addEventListener("click", () => {
+                    ta.value = question;
+                    autoGrow();
+                    updateCharCount();
+                    handleSend();
+                    suggestedContainer.remove();
+                });
+
+                suggestedContainer.appendChild(chip);
+                });
+            }
+
+            renderSuggestions();
+
+            window.hideSuggestions = function () {
+                suggestedContainer.remove();
+            };
+
+            //==========================
+
+            if (!suggestedContainer) return;
+
+            suggestedContainer.querySelectorAll(".suggestion-chip").forEach(chip => {
+                chip.addEventListener("click", () => {
+                    const question = chip.dataset.question;
+                    autoGrow();
+                    updateCharCount();
+                    handleSend();
+                    suggestedContainer.remove();
+                });
+            });
+            
         });
     </script>
     <div class="overlay" id="overlay" hidden></div>

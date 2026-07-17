@@ -183,6 +183,8 @@ async function handleSend() {
   isSending = true;
   appendUserMessage(question);
 
+  if (typeof hideSuggestions === "function") hideSuggestions();
+
   ta.value = "";
   autoGrow();
   updateCharCount();
