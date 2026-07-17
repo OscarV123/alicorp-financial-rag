@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException, status, Depends, Request
+from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import src.rag.qa as qa
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, Literal, Annotated
 from src.ingest.build_index import get_clients
-from src.backend.backend_utils import require_api_key, rate_limit
+from src.backend.backend_utils import rate_limit
 import src.config as configev
 import os
 import re
@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/query", response_model=qa.QAResult, dependencies=[Depends(require_api_key)])
+@app.post("/query", response_model=qa.QAResult)
 async def query_endpoint(req: QueryRequest, request: Request) -> qa.QAResult:
     rate_limit(request)
     
@@ -53,7 +53,7 @@ async def query_endpoint(req: QueryRequest, request: Request) -> qa.QAResult:
                             detail="An error occurred while processing the request")
 
 
-@app.get("/abrir-pdf/{filename}", dependencies=[Depends(require_api_key)])
+@app.get("/abrir-pdf/{filename}")
 async def get_pdf(filename: str, request: Request):
     rate_limit(request)
     
@@ -64,11 +64,6 @@ async def get_pdf(filename: str, request: Request):
             return FileResponse(file_path, media_type="application/pdf")
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"PDF file not found: {filename}")
-
-
-
-
-
 
 @app.get("/health")
 async def health_check() -> Dict[str, str]:

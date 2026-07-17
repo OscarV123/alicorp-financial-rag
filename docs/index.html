@@ -14,7 +14,7 @@
 <body>
     <section class="left-panel" id="left-panel">
         <div class="evidence-box">
-            <h2>Evidence</h2>
+            <h2>Evidencia</h2>
             
         </div>
     </section>
@@ -149,6 +149,45 @@
             </div>
         </div>
 
+        <div class="right-card response-card" id="right-card-response">
+            <h3>Documentos</h3>
+
+            <div class="docs-scroll" id="docs-scroll">
+                <div class="doc-card" data-doc-id="ReporteNoAuditado_4T-2024">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Reportes de resultados 4T (2024)</span>
+                </div>
+                <div class="doc-card" data-doc-id="Informe_Auditado_EEFF_Separados_2022">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Estados financieros separados (2022)</span>
+                </div>
+                <div class="doc-card" data-doc-id="Informe_Auditado_EEFF_Consolidados_2023">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Estados financieros consolidados (2023)</span>
+                </div>
+                <div class="doc-card" data-doc-id="HechosDeImportancia_Otros_Diciembre-2022">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Hechos de importancia (Diciembre-2022)</span>
+                </div>
+                <div class="doc-card" data-doc-id="HechosDeImportancia_ConvocatoriaAJuntaDeAccionistas_Febrero-2023">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Hechos de importancia (Febrero-2023)</span>
+                </div>
+                <div class="doc-card" data-doc-id="HechosDeImportancia_EmisionDeValores_Diciembre-2023">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Hechos de importancia (Diciembre-2023)</span>
+                </div>
+                <div class="doc-card" data-doc-id="HechosDeImportancia_ConvocatoriaAJuntaDeAccionistas_Febrero-2024">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Hechos de importancia (Febrero-2024)</span>
+                </div>
+                <div class="doc-card" data-doc-id="HechosDeImportancia_Recompra-Redencion-Rescate_Septiembre-2024">
+                    <img src="../assets/pdf_imagen.png" alt="" class="doc-icon">
+                    <span class="doc-name">Hechos de importancia (Septiembre-2024)</span>
+                </div>
+            </div>
+        </div>
+
         <div class="theme-row">
             <button class="theme-btn is-active" type="button" data-theme="light" aria-label="Tema claro">
                 <img src="../assets/tema_claro.png" alt="Tema claro">
@@ -161,6 +200,32 @@
 
     </aside>
 
+    <div class="modal-backdrop" id="disclaimer-backdrop">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="disclaimer-title">
+            <h2 id="disclaimer-title">¡Gracias por probar!</h2>
+            <p>
+                Este chatbot ofrece información basada en documentos financieros <b>públicos</b> de Alicorp mediante IA.
+                Las respuestas pueden contener errores o imprecisiones.
+                Detalles a tomar en cuenta:<br><br>
+                1. Las citas pueden tener imprecisiones (+-3 páginas); recomiendo verificarlas con los documentos originales.<br>
+                2. Solo se han indexado los siguientes documentos:
+                <a href="#" id="toggle-docs" style="color:var(--accent); text-decoration:underline; cursor:pointer;">Ver más</a>
+                <span id="docs-list" hidden style="font-size: 12px;"><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Reportes de resultados 4T (2024)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Estados financieros separados (2022)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Estados financieros consolidados (2023)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Hechos de importancia (Diciembre-2022)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Hechos de importancia (Febrero-2023)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Hechos de importancia (Diciembre-2023)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Hechos de importancia (Febrero-2024)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;- Hechos de importancia (Septiembre-2024)
+                </span>
+                <br><br>
+                Esta es una aplicación desarrollada por unicamente mi persona, cualquier feedback es bienvenido.
+            </p>
+            <button id="disclaimer-accept" class="disclaimer-btn">Entendido</button>
+        </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
     <script src="index.js"></script>
     <script src="responsive.js"></script>
@@ -196,6 +261,23 @@
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const toggleBtn = document.getElementById("toggle-docs");
+            const docsList = document.getElementById("docs-list");
+
+            toggleBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const isHidden = docsList.hidden;
+                docsList.hidden = !isHidden;
+                toggleBtn.textContent = isHidden ? "Ver menos" : "Ver más";
+            });
+
+            const backdrop = document.getElementById("disclaimer-backdrop");
+            const acceptBtn = document.getElementById("disclaimer-accept");
+
+            acceptBtn.addEventListener("click", () => {
+                backdrop.hidden = true;
+            });
+
 
             const input = document.getElementById("responseTopK");
             const minus = document.getElementById("minusBtn");
@@ -239,5 +321,6 @@
         });
     </script>
     <div class="overlay" id="overlay" hidden></div>
+</div>
 </body>
 </html>

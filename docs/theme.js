@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const leftHamburgerImg  = document.querySelector("#btn-left .hamburger-icon");
   const rightHamburgerImg = document.querySelector("#btn-right .hamburger-icon");
 
+  const docIcons = document.querySelectorAll(".doc-icon");
+
   function setTheme(theme) {
     const isDark = theme === "dark";
 
@@ -33,6 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (rightHamburgerImg) {
       rightHamburgerImg.src = isDark ? "../assets/inv_filtrar.png" : "../assets/filtrar.png";
     }
+
+    docIcons.forEach(icon => {
+      icon.src = isDark ? "../assets/inv_pdf_imagen.png" : "../assets/pdf_imagen.png";
+    });
 
     localStorage.setItem("theme", theme);
   }

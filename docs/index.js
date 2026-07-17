@@ -105,9 +105,12 @@ function appendBotMessage(text, isStreaming = false, messageId = null) {
     if (messageId && evidenciasMap.has(messageId)) {
       const evidencias = evidenciasMap.get(messageId);
       renderEvidencesInLeftPanel(evidencias);
-      console.log(`Mostrando evidencias de ${messageId}`);
-    } else {
-      console.log(`No hay evidencias para ${messageId}`);
+    }
+
+    const btnLeft = document.getElementById("btn-left");
+    const leftPanel = document.querySelector(".left-panel");
+    if (btnLeft && leftPanel && !leftPanel.classList.contains("is-open")) {
+      btnLeft.click();
     }
   });
 
@@ -225,13 +228,11 @@ async function handleSend() {
 
   try {
     const url = "http://127.0.0.1:8000/query";
-    const apiKey = "";
 
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "RAG-API-KEY": apiKey
       },
       body: JSON.stringify({
         question: question,
@@ -310,7 +311,7 @@ function renderEvidencesInLeftPanel(evidences) {
           <div class="work-meta">
               <div class="work-left">
                   <div class="work-text">
-                      <div class="work-title">Evidencia #${index + 1}</div>
+                      <div class="work-title">Evidencia ${index + 1}</div>
                       <div class="work-subtitle">${docId} - ${pageNum}</div>
                   </div>
               </div>
@@ -341,6 +342,16 @@ function convertQuotesToLinks(texto) {
 
 
 /* Eventos */
+document.querySelectorAll(".doc-card").forEach(card => {
+  card.style.cursor = "pointer";
+  card.addEventListener("click", () => {
+    const docId = card.dataset.docId;
+    if (!docId) return;
+    const urlPdf = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf`;
+    window.open(urlPdf, '_blank', 'noopener,noreferrer');
+  });
+});
+
 ta.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();

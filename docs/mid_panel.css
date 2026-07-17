@@ -19,7 +19,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 800;
   background: rgba(244, 245, 248, 0.88);
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
@@ -87,7 +87,7 @@ body.theme-dark .descriptive-title {
     border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease),
     transform var(--dur) var(--ease);
-  z-index: 1300;
+  z-index: 100;
 }
 
 .hamburger:hover {
@@ -423,6 +423,6 @@ body.theme-dark .descriptive-title {
 }
 
 .hamburger{
-  z-index: 1300;
+  z-index: 800;
 }
 
