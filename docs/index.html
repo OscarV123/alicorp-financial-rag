@@ -161,10 +161,39 @@
 
     </aside>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
     <script src="index.js"></script>
     <script src="responsive.js"></script>
     <script src="theme.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const combinacionesValidas = {
+            "2022": ["Estados financieros", "Hecho de importancia"],
+            "2023": ["Estados financieros", "Hecho de importancia"],
+            "2024": ["Hecho de importancia", "Reporte de resultados"]
+        };
+
+        const fYear = document.getElementById("fYear");
+        const fDoc = document.getElementById("fDoc");
+
+        function actualizarFiltroDocumentos() {
+        const year = fYear.value;
+        const opcionesValidas = combinacionesValidas[year];
+
+            Array.from(fDoc.options).forEach(opt => {
+                if (opt.value === "") return;
+
+                const esValida = !year || (opcionesValidas && opcionesValidas.includes(opt.textContent));
+                opt.style.display = esValida ? "" : "none"
+
+                if (!esValida && fDoc.value === opt.textContent) {
+                   fDoc.value = "";
+                }
+            });
+        }
+
+        fYear.addEventListener("change", actualizarFiltroDocumentos);
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
 

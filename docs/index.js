@@ -2,6 +2,9 @@ const ta = document.getElementById("question");
 const counter = document.getElementById("counter");
 const sendBtn = document.getElementById("send-btn");
 const chatArea = document.querySelector(".chat-area");
+const evidenciasMap = new Map();
+let evidenciaCounter = 0;
+let isSending = false;
 
 const MAX_CHARS = 500;
 const MAX_HEIGHT = 160;
@@ -72,64 +75,98 @@ function appendUserMessage(text) {
   scrollToBottom();
 }
 
-function appendBotMessage(text, isStreaming = false) {
+function appendBotMessage(text, isStreaming = false, messageId = null) {
   const wrap = document.createElement("div");
   wrap.className = "message-bot";
+  if (messageId) wrap.id = messageId;
 
   const contentContainer = document.createElement("div");
   contentContainer.className = "msg-text-container"; 
   
   wrap.appendChild(contentContainer);
+  
+  const actionBar = document.createElement("div");
+  actionBar.className = "message-action-bar";
+  actionBar.innerHTML = `
+    <button class="action-btn" title="Ver libro">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+    </button>
+  `;
+  wrap.appendChild(actionBar);
+
   chatArea.appendChild(wrap);
   scrollToBottom();
 
+  const actionBtn = actionBar.querySelector(".action-btn");
+  actionBtn.addEventListener("click", () => {
+    if (messageId && evidenciasMap.has(messageId)) {
+      const evidencias = evidenciasMap.get(messageId);
+      renderEvidencesInLeftPanel(evidencias);
+      console.log(`Mostrando evidencias de ${messageId}`);
+    } else {
+      console.log(`No hay evidencias para ${messageId}`);
+    }
+  });
+
   const textoConEnlaces = convertQuotesToLinks(text);
+  const htmlFormateado = DOMPurify.sanitize(marked.parse(textoConEnlaces, { breaks: true }),
+    {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'code', 'pre', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+      ALLOWED_ATTR: ['href', 'target', 'class']
+    }
+  );
 
-  const htmlFormateado = marked.parse(textoConEnlaces, { breaks: true });
+  return new Promise((resolve) => {
+    if (isStreaming) {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = htmlFormateado;
 
-  if (isStreaming) {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = htmlFormateado;
-    
-    const childNodes = Array.from(tempDiv.childNodes);
-    let index = 0;
-    const speed = 100; 
+      const childNodes = Array.from(tempDiv.childNodes);
+      let index = 0;
+      const speed = 100;
 
-    function typeWriterHTML() {
-      if (index < childNodes.length) {
+      function typeWriterHTML() {
+        if (index < childNodes.length) {
+          const nodeClone = childNodes[index].cloneNode(true);
 
-        const nodeClone = childNodes[index].cloneNode(true);
-        
-        if (nodeClone.nodeType === Node.ELEMENT_NODE) {
-          nodeClone.classList.add("fade-blur-in");
-        } else if (nodeClone.nodeType === Node.TEXT_NODE) {
+          if (nodeClone.nodeType === Node.ELEMENT_NODE) {
+            nodeClone.classList.add("fade-blur-in");
+          } else if (nodeClone.nodeType === Node.TEXT_NODE) {
+            const span = document.createElement("span");
+            span.className = "fade-blur-in";
+            span.textContent = nodeClone.textContent;
+            contentContainer.appendChild(span);
+            index++;
+            scrollToBottom();
+            setTimeout(typeWriterHTML, speed);
+            return;
+          }
 
-          const span = document.createElement("span");
-          span.className = "fade-blur-in";
-          span.textContent = nodeClone.textContent;
-          contentContainer.appendChild(span);
+          contentContainer.appendChild(nodeClone);
           index++;
+
           scrollToBottom();
           setTimeout(typeWriterHTML, speed);
           return;
         }
-
-        contentContainer.appendChild(nodeClone);
-        index++;
-        
-        scrollToBottom();
-        setTimeout(typeWriterHTML, speed);
+        resolve();
       }
+      typeWriterHTML();
+    } else {
+      contentContainer.innerHTML = htmlFormateado;
+      scrollToBottom();
+      resolve();
     }
-    
-    typeWriterHTML();
-  } else {
-    contentContainer.innerHTML = htmlFormateado;
-    scrollToBottom();
-  }
+  });
 }
 
 async function handleSend() {
+
+  if (isSending) return;
+
   enforceMaxChars();
 
   const question = getNormalized();
@@ -140,6 +177,7 @@ async function handleSend() {
 
   if (!question) return;
 
+  isSending = true;
   appendUserMessage(question);
 
   ta.value = "";
@@ -153,10 +191,7 @@ async function handleSend() {
   
   loadingWrap.innerHTML = `
     <span class="loading-text">Buscando evidencias</span>
-    <div class="dots-wrapper">
-      <span></span>
-      <span></span>
-      <span></span>
+    <div class="dots-wrapper"><span></span><span></span><span></span>
     </div>
   `;
   
@@ -216,13 +251,23 @@ async function handleSend() {
 
     loadingWrap.classList.add("fade-out");
 
-    setTimeout(() => {
+    setTimeout(async () => {
       loadingWrap.remove();
-      appendBotMessage(resultado.answer, true); 
+
+      const messageId = `msg-${++evidenciaCounter}`;
+      if (resultado.evidences && resultado.evidences.length > 0) {
+        evidenciasMap.set(messageId, resultado.evidences);
+      }
+
+      await appendBotMessage(resultado.answer, true, messageId);
 
       if (resultado.evidences && resultado.evidences.length > 0) {
         renderEvidencesInLeftPanel(resultado.evidences);
-    }
+      }
+
+      isSending = false;
+      sendBtn.disabled = false;
+      ta.focus();
     }, 300);
 
   } catch (err) {
@@ -232,9 +277,9 @@ async function handleSend() {
       loadingWrap.remove();
     }
 
-    appendBotMessage("Ocurrió un error al enviar la consulta.");
+    await appendBotMessage("Ocurrió un error al enviar la consulta.");
 
-  } finally {
+    isSending = false;
     sendBtn.disabled = false;
     ta.focus();
   }
@@ -275,7 +320,7 @@ function renderEvidencesInLeftPanel(evidences) {
 
     divEvidence.addEventListener("click", () => {
       const urlPdf = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf#page=${pageNum}`;
-      window.open(urlPdf, '_blank');
+      window.open(urlPdf, '_blank', 'noopener,noreferrer');
     });
 
     container.appendChild(divEvidence);
@@ -288,7 +333,7 @@ function convertQuotesToLinks(texto) {
   return texto.replace(regex, (match, docId, pageNum) => {
     const url = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf#page=${pageNum}`;
 
-    return `<a href="${url}" target="_blank" class="pdf-inline-link">${docId}, Pág. ${pageNum}</a>`;
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="pdf-inline-link">${docId}, Pág. ${pageNum}</a>`;
   });
 }
 

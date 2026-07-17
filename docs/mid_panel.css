@@ -220,6 +220,8 @@ body.theme-dark .descriptive-title {
 
 .message-bot{
   justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
   margin-top: 28px;
   margin-bottom: 20px;
 }
@@ -261,6 +263,38 @@ body.theme-dark .descriptive-title {
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 12.5px;
+}
+
+.message-action-bar {
+  display: flex;
+  gap: 8px;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.message-bot:hover .message-action-bar {
+  opacity: 1;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all var(--dur) var(--ease);
+}
+
+.action-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-surface);
+  transform: translateY(-2px);
 }
 
 .msg-text-container p {

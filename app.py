@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, status, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 import src.rag.qa as qa
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, Literal, Annotated
@@ -21,8 +20,7 @@ app = FastAPI(title="RAG ALICORP API", version="1.0.0")
 
 origins = [
     "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "null"
+    "http://localhost:5500"
 ]
 
 app.add_middleware(
@@ -55,8 +53,10 @@ async def query_endpoint(req: QueryRequest, request: Request) -> qa.QAResult:
                             detail="An error occurred while processing the request")
 
 
-@app.get("/abrir-pdf/{filename}")
-async def get_pdf(filename: str):
+@app.get("/abrir-pdf/{filename}", dependencies=[Depends(require_api_key)])
+async def get_pdf(filename: str, request: Request):
+    rate_limit(request)
+    
     for root, _, files in os.walk(configev.PDFS_PATH):
         if filename in files:
             file_path = os.path.join(root, filename)
