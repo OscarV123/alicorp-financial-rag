@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLeft = document.getElementById("btn-left");
   const btnRight = document.getElementById("btn-right");
 
-  const leftPanel = document.querySelector(".left-panel");   // <section class="left-panel">
-  const rightPanel = document.querySelector(".right-panel"); // <aside class="right-panel">
+  const leftPanel = document.querySelector(".left-panel");
+  const rightPanel = document.querySelector(".right-panel");
   const overlay = document.getElementById("overlay");
 
   const missing = [];

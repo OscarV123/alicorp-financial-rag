@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rightHamburgerImg.src = isDark ? "../assets/inv_filtrar.png" : "../assets/filtrar.png";
     }
 
-    docIcons.forEach(icon => {
+    document.querySelectorAll(".doc-icon").forEach(icon => {
       icon.src = isDark ? "../assets/inv_pdf_imagen.png" : "../assets/pdf_imagen.png";
     });
 

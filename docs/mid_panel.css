@@ -326,7 +326,6 @@ body.theme-dark .descriptive-title {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 90px;
     max-width: 934px;
     padding: 16px 18px 14px;
     margin: 0 auto;
@@ -336,6 +335,7 @@ body.theme-dark .descriptive-title {
     align-items: flex-start;
     z-index: 500;
     pointer-events: none;
+    transition: bottom 0.15s ease;
 }
 
 .suggestion-chip {
