@@ -1,12 +1,8 @@
 # ====================================================================================
 # Orquestador de QA (pregunta -> respuesta con citas).                               |
 # ====================================================================================
-import os
-import sys
-from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Any, Tuple
-from openai import OpenAI
 
 import src.config as config
 import src.rag.retriever as retriever

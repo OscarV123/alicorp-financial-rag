@@ -49,23 +49,31 @@ function createLoadingMessage() {
 async function sendQuery(question, { topKValue, explicitWhere, modeValue }) {
   const url = "http://127.0.0.1:8000/query";
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        question: question,
-        top_k: topKValue,
-        explicit_where: explicitWhere,
-        mode: modeValue
-      })
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || "Error en el pipeline del servidor.");
-    }
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      question: question,
+      top_k: topKValue,
+      explicit_where: explicitWhere,
+      mode: modeValue
+    })
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+
+    const error = new Error(
+      errorData.detail ||
+      "Error en el pipeline del servidor."
+    );
+
+    error.status = response.status;
+
+    throw error;
+  }
   
   return await response.json();
 }
@@ -144,7 +152,10 @@ async function handleSend() {
       loadingWrap.remove();
     }
 
-    await appendBotMessage("Ocurrió un error al enviar la consulta.");
+    await appendBotMessage(
+      console.log(err.status),
+      err.status === 429 ? "Has alcanzado el límite de consultas permitido: 20 por minuto o 70 por día." : "Ocurrió un error al enviar la consulta."
+    );
 
     finishSend();
   }

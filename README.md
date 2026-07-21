@@ -37,7 +37,7 @@ A complete full-stack Retrieval-Augmented Generation (RAG) web app for financial
 - **LICENSE**: Project license.
 - **requirements.txt**: Python dependencies for the project. Install with: *pip install -r requirements.txt*
 
-## Things I’m Paying For (So far under $7)
+## Things I’m Paying For
 - **Google cloud run**: Backend deployment. (pay-as-you-go).
 - **OpenAI API key**: Embeddings and LLM responses for user queries. (pay-as-you-go).
 

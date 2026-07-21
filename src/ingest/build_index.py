@@ -2,7 +2,6 @@
 # Indexación (chunks -> embeddings -> vector store).                           |
 # ==============================================================================
 import os
-import json
 import re
 import ast
 from pathlib import Path
