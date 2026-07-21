@@ -20,24 +20,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (lightImg && darkImg) {
       if (isDark) {
-        lightImg.src = "../assets/inv_tema_claro.png";
-        darkImg.src  = "../assets/inv_tema_oscuro.png";
+        lightImg.src = "./assets/inv_tema_claro.png";
+        darkImg.src  = "./assets/inv_tema_oscuro.png";
       } else {
-        lightImg.src = "../assets/tema_claro.png";
-        darkImg.src  = "../assets/tema_oscuro.png";
+        lightImg.src = "./assets/tema_claro.png";
+        darkImg.src  = "./assets/tema_oscuro.png";
       }
     }
 
     if (leftHamburgerImg) {
-      leftHamburgerImg.src = isDark ? "../assets/inv_libro_abierto.png" : "../assets/libro_abierto.png";
+      leftHamburgerImg.src = isDark ? "./assets/inv_libro_abierto.png" : "./assets/libro_abierto.png";
     }
 
     if (rightHamburgerImg) {
-      rightHamburgerImg.src = isDark ? "../assets/inv_filtrar.png" : "../assets/filtrar.png";
+      rightHamburgerImg.src = isDark ? "./assets/inv_filtrar.png" : "./assets/filtrar.png";
     }
 
     document.querySelectorAll(".doc-icon").forEach(icon => {
-      icon.src = isDark ? "../assets/inv_pdf_imagen.png" : "../assets/pdf_imagen.png";
+      icon.src = isDark ? "./assets/inv_pdf_imagen.png" : "./assets/pdf_imagen.png";
     });
 
     localStorage.setItem("theme", theme);
