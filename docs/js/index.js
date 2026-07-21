@@ -47,9 +47,8 @@ function createLoadingMessage() {
 }
 
 async function sendQuery(question, { topKValue, explicitWhere, modeValue }) {
-  const url = "http://127.0.0.1:8000/query";
 
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE_URL}/query`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -146,16 +145,17 @@ async function handleSend() {
     }, 300);
 
   } catch (err) {
-    console.error(err);
+    loadingWrap?.remove();
 
-    if (loadingWrap && loadingWrap.parentNode) {
-      loadingWrap.remove();
+    let mensaje = "Ocurrió un error al enviar la consulta.";
+
+    if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
+      mensaje = "No se pudo conectar con el servidor.";
+    } else if (err.status === 429) {
+      mensaje = "Has alcanzado el límite de consultas permitido: 20 por minuto o 70 por día.";
     }
 
-    await appendBotMessage(
-      console.log(err.status),
-      err.status === 429 ? "Has alcanzado el límite de consultas permitido: 20 por minuto o 70 por día." : "Ocurrió un error al enviar la consulta."
-    );
+    await appendBotMessage(mensaje);
 
     finishSend();
   }

@@ -1,3 +1,5 @@
+const API_BASE_URL = "http://127.0.0.1:8080";
+
 const documentNames = {
     "ReporteNoAuditado_4T-2024": "Reportes de resultados 4T (2024)",
     "Informe_Auditado_EEFF_Separados_2022": "Estados financieros separados (2022)",
@@ -57,7 +59,7 @@ function renderEvidencesInLeftPanel(evidences) {
     `;
 
     divEvidence.addEventListener("click", () => {
-      const urlPdf = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf#page=${pageNum}`;
+      const urlPdf = `${API_BASE_URL}/abrir-pdf/${docId}.pdf#page=${pageNum}`;
       window.open(urlPdf, '_blank', 'noopener,noreferrer');
     });
 
@@ -69,7 +71,7 @@ function convertQuotesToLinks(texto) {
   const regex = /([\w-]+),\s*Pág\.\s*(\d+)/g;
 
   return texto.replace(regex, (match, docId, pageNum) => {
-    const url = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf#page=${pageNum}`;
+    const url = `${API_BASE_URL}/abrir-pdf/${docId}.pdf#page=${pageNum}`;
 
     return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="pdf-inline-link">${friendlyName(docId)}, Pág. ${pageNum}</a>`;
   });
@@ -80,7 +82,7 @@ document.querySelectorAll(".doc-card").forEach(card => {
   card.addEventListener("click", () => {
     const docId = card.dataset.docId;
     if (!docId) return;
-    const urlPdf = `http://127.0.0.1:8000/abrir-pdf/${docId}.pdf`;
+    const urlPdf = `${API_BASE_URL}/abrir-pdf/${docId}.pdf`;
     window.open(urlPdf, '_blank', 'noopener,noreferrer');
   });
 });

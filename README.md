@@ -3,24 +3,31 @@
 # Financial RAG QA Assistant | Full-Stack Web App
 A complete full-stack Retrieval-Augmented Generation (RAG) web app for financial Q&A over audited statements, answering only from provided evidence with document-level traceability.
 
-**Live Demo ->** `[SOON!!!]`
+**Live Demo:** https://oscarv123.github.io/alicorp-financial-rag/
 
 ## Architecture Overview
 
-![RAG Architecture](assets/architecture.png)
+![RAG Architecture](docs/assets/architecture.png)
 
 ## Project Structure
 - `data/`: Contains the datasets used by the RAG pipeline, including raw and processed PDFs.
     - `processed/`: Preprocessed data generated from raw documents, including extracted text and chunked content prepared for embedding and indexing in ChromaDB.
     - `raw/`: Original financial documents (PDFs) in human-readable format, used as the primary source of truth.
 ---
+- `docs/`: Static frontend published through GitHub Pages.
+    - `assets/`: Images, icons, and other visual resources used by the interface.
+    - `css/`: Stylesheets for layout, panels, responsive behavior, and visual presentation.
+    - `js/`: Frontend logic for chat interaction, API requests, evidence rendering, filters, themes, and UI behavior.
+    - **index.html**: Main entry point of the web interface.
+---
 - `src/`: Source code files for the application.
+    - `backend/`: Shared backend utilities used by the FastAPI API layer.
+        - **backend_utils.py**: Tracks request timestamps by client IP and enforces configurable per-minute and daily rate limits.
     - `ingest/`: Ingestion and preprocessing logic for extracting high-quality text chunks from raw financial PDFs.
         - **build_index.py**: Generates embeddings from chunks and persists them into the ChromaDB vector store (offline ingestion).
         - **cleaner.py**: Short script wich cleans and normalizes raw PDF text, reducing layout noise while preserving financial values.
         - **loader.py**: Loads raw PDFs and extracts page-level text with document and page metadata for traceable RAG ingestion.
-        - **splitter.py**: Converts page text into overlapping chunks while preserving page-level traceability.
-        - **table_extractor.py**: Logic to extract table content from PDFs as faithfully as possible.
+        - **markdown_splitter.py**: Splits Markdown-converted financial documents into section-based chunks.
     - `rag/`: Core RAG logic.
         - **prompt.py**: Prompt templates and strict grounding rules for evidence-based financial QA (anti-hallucination + citation policy).
         - **qa.py**: RAG QA orchestrator that retrieves evidence, builds grounded context, calls the LLM, and returns the final answer with citations.
