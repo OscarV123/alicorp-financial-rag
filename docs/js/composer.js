@@ -3,12 +3,12 @@ const counter = document.getElementById("counter");
 const MAX_CHARS = 500;
 const MAX_HEIGHT = 160;
 const composer = document.querySelector(".composer");
-const suggestedQuestionsEl = document.getElementById("suggested-questions");
+const suggestedQuestions = document.getElementById("suggested-questions");
 
 function adjustSuggestionsPosition() {
-  if (!composer || !suggestedQuestionsEl) return;
+  if (!composer || !suggestedQuestions) return;
   const composerHeight = composer.getBoundingClientRect().height;
-  suggestedQuestionsEl.style.bottom = `${composerHeight}px`;
+  suggestedQuestions.style.bottom = `${composerHeight}px`;
 }
 
 function normalizeQuestion(text) {
@@ -53,7 +53,7 @@ function enforceMaxChars() {
   updateCharCount();
 }
 
-if (composer && suggestedQuestionsEl) {
+if (composer && suggestedQuestions) {
   const resizeObserver = new ResizeObserver(adjustSuggestionsPosition);
   resizeObserver.observe(composer);
   adjustSuggestionsPosition();
@@ -70,6 +70,9 @@ ta.addEventListener("keydown", (e) => {
 });
 
 ta.addEventListener("input", () => {
+  const hasText = ta.value.trim().length > 0;
+  suggestedQuestions.classList.toggle("is-hidden", hasText);
+
   enforceMaxChars();
 });
 

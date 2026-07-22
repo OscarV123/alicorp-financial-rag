@@ -129,7 +129,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ta.value = question;
         autoGrow();
         updateCharCount();
-        ta.focus();
-    });
+
+        ta.dispatchEvent(new Event("input", {
+            bubbles: true
+        }));
+    })
 
 });

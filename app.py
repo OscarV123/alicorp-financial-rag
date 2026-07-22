@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, status, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import src.rag.qa as qa
@@ -18,10 +19,16 @@ class QueryRequest(BaseModel):
 
 app = FastAPI(title="RAG ALICORP API", version="1.0.0")
 
+app.mount(
+    "/pdfjs",
+    StaticFiles(
+        directory=str(configev.PDFJS_PATH),
+        html=True
+    ),
+    name="pdfjs"
+)
 origins = [
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "https://oscarv123.github.io/alicorp-financial-rag/"
+    "https://oscarv123.github.io/alicorp-financial-rag/",
 ]
 
 app.add_middleware(

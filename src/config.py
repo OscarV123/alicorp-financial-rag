@@ -20,6 +20,7 @@ except ImportError:
     pass
 
 PDFS_PATH = Path("data/raw/")
+PDFJS_PATH = Path("docs/pdfjs/")
 PAGES_FILE = Path("data/processed/pages.jsonl")
 CHUNKS_FILE = Path("data/processed/chunks.jsonl")
 CHROMA_PATH = Path("vector_store")

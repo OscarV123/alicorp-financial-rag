@@ -202,7 +202,7 @@ body.theme-dark .descriptive-title {
   max-width: 900px;
   width: 100%;
   margin: 0 auto;
-  padding: 84px 6px 0px;
+  padding: 50px 6px 0px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -324,18 +324,43 @@ body.theme-dark .descriptive-title {
 
 .suggested-questions {
     position: fixed;
-    left: 0;
-    right: 0;
-    max-width: 934px;
-    padding: 16px 18px 14px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-    z-index: 500;
-    pointer-events: none;
-    transition: bottom 0.15s ease;
+  left: 0;
+  right: 0;
+  max-width: 934px;
+  padding: 16px 18px 0;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+
+  z-index: 500;
+  pointer-events: none;
+
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+
+  transition:
+    bottom 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0s linear 0s;
+}
+
+#suggested-questions.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  pointer-events: none;
+
+  transition:
+    bottom 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0s linear 0.15s;
+
 }
 
 .suggestion-chip {

@@ -93,7 +93,6 @@ function prepareSend(question) {
 function finishSend() {
   isSending = false;
   sendBtn.disabled = false;
-  ta.focus();
 }
 
 async function processBotResponse(response) {
