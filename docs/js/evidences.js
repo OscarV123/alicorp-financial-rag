@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://192.168.1.105:8000";
+const API_BASE_URL = "";
 const PDF_VIEWER_URL = `${API_BASE_URL}/pdfjs/web/viewer.html`;
 
 const documentNames = {

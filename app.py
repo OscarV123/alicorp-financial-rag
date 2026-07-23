@@ -41,7 +41,7 @@ app.add_middleware(
 
 @app.post("/query", response_model=qa.QAResult)
 async def query_endpoint(req: QueryRequest, request: Request) -> qa.QAResult:
-    rate_limit(request)
+    rate_limit(request, scope="query", per_minute_limit=configev.PER_MINUTE_LIMIT, per_day_limit=configev.PER_DAY_LIMIT)
     
     question = req.question.strip()
     question = re.sub(r"\s+", " ", question)
@@ -63,7 +63,7 @@ async def query_endpoint(req: QueryRequest, request: Request) -> qa.QAResult:
 
 @app.get("/abrir-pdf/{filename}")
 async def get_pdf(filename: str, request: Request):
-    rate_limit(request)
+    rate_limit(request, scope="pdf", per_minute_limit=configev.PDF_PER_MINUTE_LIMIT, per_day_limit=configev.PDF_PER_DAY_LIMIT)
     
     for root, _, files in os.walk(configev.PDFS_PATH):
         if filename in files:
@@ -78,7 +78,9 @@ async def health_check() -> Dict[str, str]:
     return {"status": "ok"}
 
 @app.get("/ready")
-async def readiness_check():
+async def readiness_check(request: Request):
+    rate_limit(request, scope="ready", per_minute_limit=60, per_day_limit=5000)
+
     try:
         _, collection = get_clients()
         api_key = os.getenv("OPENAI_API_KEY")

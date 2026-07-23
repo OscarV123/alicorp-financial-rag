@@ -8,4 +8,10 @@ __pycache__/
 .env.*
 *.log
 .DS_Store
-assets/
+Thumbs.db
+README.md
+LICENSE
+docs/assets
+docs/css
+docs/js
+docs/index.html
