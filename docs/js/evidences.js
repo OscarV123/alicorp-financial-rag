@@ -1,4 +1,4 @@
-const API_BASE_URL = "";
+const API_BASE_URL = "https://alicorp-financial-rag-api.thankfulbush-6dc9a3bf.brazilsouth.azurecontainerapps.io";
 const PDF_VIEWER_URL = `${API_BASE_URL}/pdfjs/web/viewer.html`;
 
 const documentNames = {

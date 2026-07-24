@@ -28,7 +28,7 @@ app.mount(
     name="pdfjs"
 )
 origins = [
-    "https://oscarv123.github.io/alicorp-financial-rag/",
+    "https://oscarv123.github.io",
 ]
 
 app.add_middleware(
