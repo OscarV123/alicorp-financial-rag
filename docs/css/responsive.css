@@ -78,11 +78,12 @@
 
   #right-panel{
     right: 0;
+    width: 230px;
     transform: translateX(105%);
     background-color: var(--bg);
   }
 
-  #left-panel.is-open{ transform: translateX(0); }
+  #left-panel.is-open{ transform: translateX(0); width: 230px; }
   #right-panel.is-open{ transform: translateX(0); }
 
   #right-card,
@@ -98,13 +99,18 @@
     margin-top: 16px;
   }
 
-  #work-card{
+  .work-card{
     background: var(--send-button);
+    width: 100%;
   }
 
   .theme-row{
-    margin-left: 214px;
+    margin-left: 15px;
+    margin-right: 12px;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    width: auto;
   }
 }
 

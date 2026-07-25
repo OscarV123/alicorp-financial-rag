@@ -169,7 +169,7 @@
    ============================================================ */
 .theme-row {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   margin-top: 8px;
   margin-left: 182px;
   width: fit-content;

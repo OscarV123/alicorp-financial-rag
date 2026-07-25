@@ -1,3 +1,4 @@
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 const ta = document.getElementById("question");
 const counter = document.getElementById("counter");
 const MAX_CHARS = 500;
@@ -61,6 +62,10 @@ if (composer && suggestedQuestions) {
 
 ta.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
+    if (isTouchDevice) {
+      return;
+    }
+    
     e.preventDefault();
     handleSend();
     return;
