@@ -74,12 +74,14 @@ async def get_pdf(filename: str, request: Request):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"PDF file not found: {filename}")
 
 @app.get("/health")
-async def health_check() -> Dict[str, str]:
+async def health_check(request: Request) -> Dict[str, str]:
+    rate_limit(request, scope="health", per_minute_limit=60, per_day_limit=5000)
+
     return {"status": "ok"}
 
 @app.get("/ready")
 async def readiness_check(request: Request):
-    rate_limit(request, scope="ready", per_minute_limit=60, per_day_limit=5000)
+    rate_limit(request, scope="ready", per_minute_limit=60, per_day_limit=1000)
 
     try:
         _, collection = get_clients()

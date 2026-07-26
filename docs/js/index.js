@@ -151,7 +151,7 @@ async function handleSend() {
     if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
       mensaje = "No se pudo conectar con el servidor.";
     } else if (err.status === 429) {
-      mensaje = "Has alcanzado el límite de consultas permitido: 5 por minuto o 70 por día.";
+      mensaje = "Has alcanzado el límite de consultas permitido: 5 por minuto y 70 por día.";
     }
 
     await appendBotMessage(mensaje);
